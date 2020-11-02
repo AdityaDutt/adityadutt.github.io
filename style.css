@@ -92,6 +92,8 @@ body {
     border-radius: 50%;
     
     z-index: 4;
+    box-shadow: 0px 5px 50px 0px #ffffff, 0px 0px 0px 7px #ffffff ;
+
 }
 
 .profile-card__img img {
