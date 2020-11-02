@@ -37,13 +37,13 @@
   font-family: 'Epilogue', sans-serif;
   font-weight: 700;
   font-size: 25px;
-  color: #f4f3f3;
+  color: #222831;
 }
 
 
 body {
     font-family: "Quicksand", sans-serif;
-    background-color: #161515; 
+    background-color: #ffffff; 
     transition: all 0.7s ease;
    
 }
