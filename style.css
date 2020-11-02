@@ -26,7 +26,7 @@
   font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: 45px;
-  color: #222831;
+  color: #393e46;
 
 }
 
@@ -78,7 +78,7 @@ body {
 
 .mid-part{
   transform: translateY(-30%);
-  color:222831;
+  color:393e46;
   
 }
 
@@ -92,7 +92,7 @@ body {
     overflow: hidden;
    
     z-index: 4;
-    box-shadow: 0px 5px 50px 0px #ffffff, 0px 0px 0px 7px #b5edb4 ;
+    box-shadow: 0px 5px 50px 0px #ffffff, 0px 0px 0px 7px #ffffff ;
 }
 
 .profile-card__img img {
