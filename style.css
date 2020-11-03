@@ -273,6 +273,8 @@ button::before, button::after{
   position: absolute;
   transition: all 0.2s linear;
   background: #fff;
+ color:#393e46;
+
 }
 
 span::before, span::after{
