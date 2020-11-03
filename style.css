@@ -257,12 +257,12 @@ button{
 }
 
 .btn1 span{
-  display: block;
- color: aliceblue;
+ display: block;
  padding-left: 40px;
  padding-right: 40px;
  padding-top: 20px;
  padding-bottom: 20px;
+ color:222831;
 
 }
 
@@ -273,7 +273,6 @@ button::before, button::after{
   position: absolute;
   transition: all 0.2s linear;
   background: #fff;
-  color:222831;
 }
 
 span::before, span::after{
