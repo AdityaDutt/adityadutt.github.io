@@ -170,7 +170,7 @@ body {
     content: "";
     width: 1px;
     height: 100%;
-    border-right: 2px solid white;
+    border-right: 2px solid black;
     animation: blink 0.8s infinite ease;
 }
 
