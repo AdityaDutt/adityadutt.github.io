@@ -50,6 +50,15 @@
   color: #4A4A48;
 }
 
+.lab-line{
+  justify-content:left;
+  align-items:left; 
+  font-family: 'Epilogue', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #4A4A48;
+}
+
 
 body {
     font-family: "Quicksand", sans-serif;
