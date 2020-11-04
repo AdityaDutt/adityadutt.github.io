@@ -107,8 +107,8 @@ body {
     height: 185px;
     margin-left: auto;
     margin-right: auto;
-    transform: translateY(-50%);
-    border-radius: 50%;
+    transform: translateY(-20%);
+    border-radius: 20%;
     overflow: hidden;
     
     z-index: 2;
