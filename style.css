@@ -112,7 +112,7 @@ body {
     overflow: hidden;
     
     z-index: 4;
-    box-shadow: 0px 2px 50px 0px #f9813a, 0px 0px 0px 7px #f9813a ;
+    box-shadow: 0px 2px 50px 0px #f9813a, 0px 0px 0px 2px #f9813a ;
 
 }
 
