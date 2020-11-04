@@ -51,8 +51,9 @@
 }
 
 .lab-line{
-  justify-content:left;
-  align-items:left; 
+  display:flex;
+  justify-content:center;
+  align-items:center; 
   font-family: 'Epilogue', sans-serif;
   font-weight: 700;
   font-size: 18px;
