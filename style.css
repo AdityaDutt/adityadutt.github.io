@@ -44,7 +44,7 @@
   display:flex;
   justify-content:center;
   align-items:center; 
-  font-family: 'Lato', sans-serif;
+  font-family: 'Epilogue', sans-serif;
   font-weight: 700;
   font-size: 20px;
   color: #4A4A48;
@@ -254,7 +254,6 @@ button{
   width: 20%;
   font-family: 'Roboto', sans-serif;
   background: rgba(0,0,0,0.09);
-  color:#393e46;
 
 }
 
