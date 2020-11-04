@@ -254,6 +254,7 @@ button{
   width: 20%;
   font-family: 'Roboto', sans-serif;
   background: rgba(0,0,0,0.09);
+  
 }
 
 .btn1 span{
@@ -272,6 +273,7 @@ button::before, button::after{
   height: 2px;
   position: absolute;
   transition: all 0.2s linear;
+  background:#fff;
   color:#393e46;
 
 }
@@ -282,6 +284,7 @@ span::before, span::after{
   height:0;
   position: absolute;
   transition: all 0.2s linear;
+  background:#fff;
   color:#393e46;
 
 }
