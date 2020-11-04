@@ -263,7 +263,7 @@ button{
  padding-right: 40px;
  padding-top: 20px;
  padding-bottom: 20px;
- background:#000;
+ background:#fff;
 
 }
 
@@ -283,7 +283,7 @@ span::before, span::after{
   height:0;
   position: absolute;
   transition: all 0.2s linear;
-  color:#393e46;
+  background:#fff;
 
 }
 button:hover::before, button:hover::after{
