@@ -263,7 +263,7 @@ button{
  padding-right: 40px;
  padding-top: 20px;
  padding-bottom: 20px;
- color:#393e46;
+ background:#000;
 
 }
 
@@ -273,7 +273,7 @@ button::before, button::after{
   height: 2px;
   position: absolute;
   transition: all 0.2s linear;
-  background:#fff;
+  background:#000;
 
 }
 
