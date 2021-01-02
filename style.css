@@ -411,6 +411,7 @@ CSS for skills and exp section
 font-size: 18px ;
 font-family: 'Roboto', sans-serif;
 font-weight: 300 ;
+margin-right: 8%;
 
 }
 
@@ -620,7 +621,7 @@ a:hover, a:focus{
 
 .achivements{
   margin-top: 20%;
-margin-bottom: 20%;
+  margin-bottom: 20%;
 }
 
 .achiv-head{
@@ -645,8 +646,8 @@ margin-bottom: 20%;
 }
 .article{
   font-size: 15px ;
-font-family: 'Roboto', sans-serif;
-font-weight: 300 ;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300 ;
   width:50%;
   margin:30px;
   padding:12px;
@@ -681,3 +682,16 @@ font-weight: 300 ;
   padding-bottom: 0;
   font-family: 'Caveat', cursive;
 }
+
+
+#bold-letters {
+  font-family: 'Epilogue', sans-serif;
+  /* font-family: "Quicksand", sans-serif; */
+  text-align: center;
+  font-weight: 700;
+  font-size: 18px;
+
+}
+
+
+
