@@ -86,7 +86,7 @@ body {
     
 }
 .button-conatiner{
-  margin-top: 5%;
+  margin-top: 1%;
   margin-bottom: 20%;
 
 }
@@ -259,7 +259,8 @@ button{
   font-size: 10px;
   cursor: pointer;
   margin: 20px 30px;
-  top: "50%";
+  margin-top: 3%;
+  /* top: "50%"; */
   left: "50%";
   width: 20%;
   font-family: 'Roboto', sans-serif;
