@@ -86,8 +86,9 @@ body {
     
 }
 .button-conatiner{
-  padding-top: 110px;
+  /* padding-top: 110px; */
   margin-bottom: 20%;
+  margin-top: 3%;
 
 }
 .type{
@@ -259,8 +260,7 @@ button{
   font-size: 10px;
   cursor: pointer;
   margin: 20px 30px;
-  margin-top: 1%;
-/*     top: "50%"; */
+  top: "50%";
   left: "50%";
   width: 20%;
   font-family: 'Roboto', sans-serif;
