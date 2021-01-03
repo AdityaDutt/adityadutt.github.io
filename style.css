@@ -462,10 +462,13 @@ padding-top: 25px;
   font-family: 'Major Mono Display', monospace;
   color: #161515;
   text-align: center;  
+
 }
 
 .project{
   display: inline-block;
+  margin-right: 10px;
+  margin-top: 50px;
   
 }
 
