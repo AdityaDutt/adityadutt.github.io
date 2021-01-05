@@ -1,4 +1,4 @@
-const texts = ['Student', 'Thinker', "Problem Solver"];
+const texts = ['Student', 'Researcher', "Problem Solver"];
 
 let count = 0;
 let index = 0;
