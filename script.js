@@ -22,7 +22,7 @@ let letter = '';
         count++;
         index = 0;
     }
-    setTimeout(typeEffect, 400)
+    setTimeout(typeEffect, 100)
 })();
 
 
