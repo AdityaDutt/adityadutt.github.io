@@ -53,20 +53,6 @@ h1, h2, h3 { font-weight: 600; text-wrap: balance; letter-spacing: -0.01em; }
 .side { align-self: start; display: grid; gap: 18px; }
 .avatar { position: relative; width: 100%; max-width: 260px; }
 .photo { display: block; width: 100%; aspect-ratio: 1; border-radius: 50%; object-fit: cover; background: var(--fig); }
-.avatar .hi { position: absolute; right: -4%; top: -2%; width: 30%; height: auto; opacity: 0; transform-origin: 60% 90%; pointer-events: none;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .18)); }
-.avatar.waving .hi { animation: hi 2.6s ease-in-out both; }
-.avatar.waving .photo { animation: nod 2.6s ease-in-out both; }
-@keyframes hi {
-  0% { opacity: 0; transform: scale(.4) rotate(0); }
-  12% { opacity: 1; transform: scale(1) rotate(-14deg); }
-  24% { transform: scale(1) rotate(16deg); } 36% { transform: scale(1) rotate(-14deg); }
-  48% { transform: scale(1) rotate(16deg); } 60% { transform: scale(1) rotate(-12deg); }
-  74% { opacity: 1; transform: scale(1) rotate(8deg); }
-  100% { opacity: 0; transform: scale(.7) rotate(0); } }
-@keyframes nod { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-3deg); } 40% { transform: rotate(3deg); } 60% { transform: rotate(-2deg); } 80% { transform: rotate(1deg); } }
-@media (prefers-reduced-motion: reduce) { .avatar.waving .hi { animation: none; opacity: 1; } .avatar.waving .photo { animation: none; } }
-.avatar canvas { position: absolute; left: -34px; top: -34px; width: calc(100% + 68px); height: calc(100% + 68px); pointer-events: none; }
 h1 { font-size: 1.85rem; margin: 0 0 8px; line-height: 1.15; font-weight: 700; }
 .title { color: var(--muted); margin: 0 0 8px; line-height: 1.5; }
 .lab { margin: 0; font-weight: 600; font-size: 0.95rem; }
@@ -108,7 +94,6 @@ h3 { font-size: 1rem; margin: 0 0 6px; color: var(--fg); }
 .fig > span { background: var(--fig); padding: 3px 6px; border-radius: 3px; margin: 8px; }
 .fig:has(img) { min-height: 0; background: #fff; }
 .fig:has(img) > span { display: none; }
-.fig > .cap { position: absolute; right: 6px; bottom: 6px; font: 600 0.68rem/1 var(--font); font-style: normal; color: var(--muted); background: rgba(255, 255, 255, 0.9); padding: 3px 6px; border-radius: 4px; }
 .fig img { display: block; width: 100%; height: auto; max-height: var(--figh, 190px); object-fit: contain; padding: 6px; }
 
 ol.pubs { margin: 0; padding: 0; list-style: none; display: grid; gap: 16px; }
@@ -153,12 +138,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 <aside class="side">
   <div class="avatar">
     <img class="photo" src="images/profile_picture.jpeg" alt="Aditya Dutt">
-    <canvas id="halo" aria-hidden="true"></canvas>
-    <svg class="hi" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7 11.5V6.5a1.5 1.5 0 0 1 3 0v4M10 10V4.5a1.5 1.5 0 0 1 3 0V10M13 10V5.5a1.5 1.5 0 0 1 3 0V11M16 11V8.5a1.5 1.5 0 0 1 3 0v5.5a7 7 0 0 1-7 7h-.5a6.5 6.5 0 0 1-5.4-2.9L3.5 14.6a1.6 1.6 0 0 1 2.5-2L7 13.7"
-        fill="#fff" stroke="url(#wg)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M19.5 3.5c1 .8 1.6 1.8 1.8 3M2.7 17.5c.4 1.2 1.1 2.2 2.1 2.9" fill="none" stroke="#fa4616" stroke-width="1.2" stroke-linecap="round"/>
-    </svg>
+    <span class="bubble" aria-hidden="true">Hi there!</span>
   </div>
   <div class="who">
     <h1>Aditya Dutt, Ph.D.</h1>
@@ -191,7 +171,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 <h2 id="research">Research</h2>
 <div class="themes">
   <div class="theme" style="--figw: 220px; --figh: 170px">
-    <div class="fig"><span>COMMANet shared manifold<br>(JSTARS 2022)</span><img src="images/fig-commanet.png" alt="Illustration of a shared latent space where hyperspectral and LiDAR samples of the same class cluster together" onerror="this.remove()"><em class="cap">Illustration</em></div>
+    <div class="fig"><span>COMMANet shared manifold<br>(JSTARS 2022)</span><img src="images/fig-commanet.png" alt="Shared latent space where hyperspectral and LiDAR samples of the same class cluster together" onerror="this.remove()"></div>
     <div><h3>Multimodal alignment and fusion</h3>
       <p>Mapping hyperspectral, LiDAR, SAR and optical data into one class-discriminative space, so one model serves every sensor and a missing sensor can be predicted from the others.</p>
       <div class="papers">JSTARS 2022 · IGARSS 2025</div></div>
@@ -266,7 +246,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 /* Header: an interactive embedding. Points link to near neighbours and alternate between
    a structured latent space (class clusters strung along a curve or around a ring) and
    connected manifolds sampled on a regular grid (rippling sheet, swiss roll, color ribbon,
-   torus, double helix). "Wave hello" gathers them into a waving hand. */
+   torus, double helix). "Wave hello" gathers them into a waving avatar. */
 (function () {
   const cv = document.getElementById("manifold"), ctx = cv.getContext("2d");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -299,20 +279,40 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       p.ord = i / (n - 1); p.strand = i % 2;
       p.gu = Math.floor(i / R) / Math.max(1, C - 1); p.gv = (i % R) / Math.max(1, R - 1);
     });
-    // hand: outline of an open palm (200x200 design grid)
-    const oc = document.createElement("canvas"); oc.width = oc.height = 200;
-    const o = oc.getContext("2d"); o.fillStyle = "#000"; o.strokeStyle = "#000"; o.lineCap = "round";
-    o.beginPath(); o.roundRect ? o.roundRect(60, 92, 82, 84, 20) : o.rect(60, 92, 82, 84); o.fill();
-    o.fillRect(78, 168, 46, 30);
-    [[73, 100, 66, 34, 21], [96, 98, 96, 20, 22], [119, 100, 125, 30, 21], [138, 110, 151, 56, 18], [64, 146, 28, 108, 21]]
-      .forEach(([x1, y1, x2, y2, w]) => { o.lineWidth = w; o.beginPath(); o.moveTo(x1, y1); o.lineTo(x2, y2); o.stroke(); });
-    const img = o.getImageData(0, 0, 200, 200).data, cells = [];
-    const inside = (x, y) => x >= 0 && y >= 0 && x < 200 && y < 200 && img[(y * 200 + x) * 4 + 3] > 128;
-    for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2)
-      if (inside(x, y) && (!inside(x - 3, y) || !inside(x + 3, y) || !inside(x, y - 3) || !inside(x, y + 3))) cells.push([x, y]);
-    for (let i = cells.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cells[i], cells[j]] = [cells[j], cells[i]]; }
-    const pick = cells.slice(0, pts.length).sort((a, b) => a[1] - b[1]);
-    [...pts].sort((a, b) => a.t - b.t).forEach((p, i) => { p.hand = pick[i % pick.length]; });
+    // avatar: a stylized portrait (glasses, smile, suit and tie) with a raised forearm that waves.
+    // Drawn on a 200x200 design grid; outlines of filled shapes plus thin feature strokes become targets.
+    const layer = draw => { const c = document.createElement("canvas"); c.width = c.height = 200;
+      const o = c.getContext("2d"); o.fillStyle = o.strokeStyle = "#000"; o.lineCap = o.lineJoin = "round"; draw(o);
+      return o.getImageData(0, 0, 200, 200).data; };
+    const body = layer(o => {
+      o.beginPath(); o.ellipse(95, 60, 25, 30, 0, 0, 6.283); o.fill();                       // head
+      o.beginPath(); o.ellipse(95, 40, 27, 17, 0, Math.PI, 0); o.fill();                     // hair
+      o.fillRect(86, 86, 18, 16);                                                            // neck
+      o.beginPath(); o.moveTo(38, 200); o.lineTo(46, 130); o.quadraticCurveTo(95, 98, 144, 130); o.lineTo(152, 200); o.fill();  // torso
+      o.lineWidth = 17; o.beginPath(); o.moveTo(138, 128); o.lineTo(160, 108); o.stroke();  // upper arm
+    });
+    const face = layer(o => {
+      o.lineWidth = 2.4;
+      [[84, 60], [106, 60]].forEach(([x, y]) => { o.beginPath(); o.arc(x, y, 8, 0, 6.283); o.stroke(); });   // glasses
+      o.beginPath(); o.moveTo(92, 59); o.lineTo(98, 59); o.stroke();
+      o.beginPath(); o.arc(95, 72, 8, 0.2 * Math.PI, 0.8 * Math.PI); o.stroke();            // smile
+      o.beginPath(); o.moveTo(80, 112); o.lineTo(95, 128); o.lineTo(110, 112); o.stroke();  // collar
+      o.beginPath(); o.moveTo(95, 116); o.lineTo(90, 126); o.lineTo(95, 160); o.lineTo(100, 126); o.closePath(); o.stroke();  // tie
+    });
+    const arm = layer(o => {
+      o.lineWidth = 15; o.beginPath(); o.moveTo(160, 108); o.lineTo(170, 66); o.stroke();  // forearm
+      o.beginPath(); o.arc(172, 54, 11, 0, 6.283); o.fill();                                 // palm
+      o.lineWidth = 5; [[164, 46, 160, 28], [170, 44, 169, 24], [176, 44, 178, 25], [181, 48, 186, 32], [162, 58, 150, 50]]
+        .forEach(([a, b, c, d]) => { o.beginPath(); o.moveTo(a, b); o.lineTo(c, d); o.stroke(); });  // fingers + thumb
+    });
+    const ink = (img, x, y) => x >= 0 && y >= 0 && x < 200 && y < 200 && img[(y * 200 + x) * 4 + 3] > 128;
+    const outline = img => { const out = []; for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2)
+      if (ink(img, x, y) && (!ink(img, x - 3, y) || !ink(img, x + 3, y) || !ink(img, x, y - 3) || !ink(img, x, y + 3))) out.push([x, y]); return out; };
+    const strokes = img => { const out = []; for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2) if (ink(img, x, y)) out.push([x, y]); return out; };
+    const take = (arr, k) => { const step = arr.length / k; return Array.from({ length: k }, (_, i) => arr[Math.floor(i * step)]); };
+    const nb = Math.round(n * 0.46), nf = Math.round(n * 0.22), na = n - nb - nf;
+    const targets = [...take(outline(body), nb).map(c => [c, 0]), ...take(strokes(face), nf).map(c => [c, 0]), ...take(outline(arm), na).map(c => [c, 1])];
+    pts.forEach((p, i) => { [p.av, p.arm] = targets[i]; });
   }
 
   // 3D helpers: yaw about vertical axis, then pitch toward the viewer; returns [x, y, depthScale]
@@ -354,11 +354,13 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       const a = p.ord * 6.283 * 3 + p.strand * Math.PI + ms / 2600;
       return view((p.ord - 0.5) * 2, 0.32 * Math.sin(a), 0.32 * Math.cos(a), 0, 0.15, W * 0.4, H * 0.95);
     }
-    if (mode === "hand") {    // open palm waving about the wrist
-      const sc = H * 0.94 / 200, a = 0.38 * Math.sin(ms / 230);
-      const dx = (p.hand[0] - 100) * sc, dy = (p.hand[1] - 196) * sc;
-      const hx = W < 600 ? W * 0.36 : W / 2;   // keep clear of the button on phones
-      return [hx + dx * Math.cos(a) - dy * Math.sin(a), H * 0.97 + dx * Math.sin(a) + dy * Math.cos(a)];
+    if (mode === "avatar") {  // portrait; the forearm and hand wave about the elbow
+      const sc = H * 0.95 / 200, ex = 160, ey = 108;
+      let [x, y] = p.av;
+      if (p.arm) { const a = 0.32 * Math.sin(ms / 230), dx = x - ex, dy = y - ey;
+        x = ex + dx * Math.cos(a) - dy * Math.sin(a); y = ey + dx * Math.sin(a) + dy * Math.cos(a); }
+      const cx = W < 600 ? W * 0.38 : W / 2;   // keep clear of the button on phones
+      return [cx + (x - 100) * sc, H * 0.03 + y * sc];
     }
     // color ribbon (1D manifold)
     return [(0.04 + 0.92 * p.ord) * W, H * (0.5 + 0.22 * Math.sin(p.ord * 8.5 + ms / 1500)) + (p.gv - 0.5) * H * 0.12];
@@ -366,7 +368,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 
   const ORDER = ["beads", "sheet", "ring", "swiss", "color", "torus", "helix"], DUR = 5200;
   let handUntil = 0, now = 0, Lcur = 40;
-  const LINK = { hand: 16, beads: 40, ring: 44, sheet: 44, swiss: 40, torus: 50, helix: 36, color: 44 }, PULL = { hand: 0.03 };
+  const LINK = { avatar: 15, beads: 40, ring: 44, sheet: 44, swiss: 40, torus: 50, helix: 36, color: 44 }, PULL = { avatar: 0.03 };
 
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
@@ -408,7 +410,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
   function step(ms) {
     now = ms;
-    const seg = Math.floor(ms / DUR), mode = ms < handUntil ? "hand" : ORDER[seg % ORDER.length];
+    const seg = Math.floor(ms / DUR), mode = ms < handUntil ? "avatar" : ORDER[seg % ORDER.length];
     Lcur += ((LINK[mode] || 40) - Lcur) * 0.06;
     const kp = PULL[mode] || 0.01;
     for (const p of pts) {
@@ -429,10 +431,8 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   cv.addEventListener("pointerdown", setMouse);
   cv.addEventListener("pointerleave", () => { mouse.on = false; });
   document.getElementById("wave").addEventListener("click", () => {
-    const av = document.querySelector(".avatar");
-    if (av) { av.classList.remove("waving"); void av.offsetWidth; av.classList.add("waving"); setTimeout(() => av.classList.remove("waving"), 2700); }
-    if (!reduce) { handUntil = now + 4500; mouse.on = false; return; }
-    pts.forEach(p => { [p.x, p.y] = tgt(p, "hand", 0); }); render();       // reduced motion: a still hand, then back
+    if (!reduce) { handUntil = now + 5000; mouse.on = false; return; }
+    pts.forEach(p => { [p.x, p.y] = tgt(p, "avatar", 0); }); render();     // reduced motion: a still avatar, then back
     setTimeout(() => { pts.forEach(p => { [p.x, p.y] = tgt(p, "sheet", 0); }); render(); }, 3000);
   });
   window.addEventListener("resize", resize);
@@ -440,65 +440,6 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     setStops(); pts.forEach(p => { const c = rgb(p.t); p.c = `rgb(${c})`; p.cl = c.join(","); });
   });
   resize();
-  if (!reduce) requestAnimationFrame(step);
-})();
-
-/* Photo halo: points orbit the portrait, periodically gathering into small clusters
-   on the ring and spreading out again. They always stay outside the photo. */
-(function () {
-  const cv = document.getElementById("halo"); if (!cv) return;
-  const ctx = cv.getContext("2d"), reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const dark = () => document.documentElement.dataset.theme === "dark" ||
-    (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
-  const col = t => { const S = dark() ? [[255, 110, 60], [255, 210, 70]] : [[250, 70, 22], [236, 172, 0]];
-    return S[0].map((v, k) => Math.round(v + (S[1][k] - v) * t)).join(","); };
-  let W = 0, R = 0, pts = [];
-  const N = 32;
-  function size() {
-    const r = cv.getBoundingClientRect(); if (!r.width) return;
-    const d = Math.min(window.devicePixelRatio || 1, 2);
-    W = r.width; R = (W - 68) / 2; cv.width = cv.height = W * d; ctx.setTransform(d, 0, 0, d, 0, 0);
-    if (!pts.length) for (let i = 0; i < N; i++) {
-      const t = Math.random();
-      pts.push({ t, c: col(t), a0: (i / N) * 6.283, band: 1.07 + Math.random() * 0.15, ph: Math.random() * 6.283,
-        s: i % 3, sz: 1.6 + Math.random() * 1.8, x: W / 2, y: W / 2, vx: 0, vy: 0, clump: Math.floor(t * 4) });
-    }
-    if (reduce) { pts.forEach(p => { [p.x, p.y] = target(p, 0, 0); }); draw(); }
-  }
-  function target(p, ms, g) {            // g: 0 = even orbit, 1 = gathered into four clusters
-    const spin = ms / 9000;
-    const even = p.a0 + spin, clustered = p.clump / 4 * 6.283 + spin + (p.t * 4 - p.clump - 0.5) * 0.45;
-    const a = even + (clustered - even) * g;
-    const r = R * (p.band + 0.03 * Math.sin(ms / 700 + p.ph));
-    return [W / 2 + Math.cos(a) * r, W / 2 + Math.sin(a) * r];
-  }
-  function mark(p) {
-    ctx.beginPath();
-    if (p.s === 0) ctx.arc(p.x, p.y, p.sz, 0, 6.283);
-    else if (p.s === 1) ctx.rect(p.x - p.sz * 0.9, p.y - p.sz * 0.9, p.sz * 1.8, p.sz * 1.8);
-    else { ctx.moveTo(p.x, p.y - p.sz * 1.2); ctx.lineTo(p.x + p.sz * 1.1, p.y + p.sz * 0.8); ctx.lineTo(p.x - p.sz * 1.1, p.y + p.sz * 0.8); ctx.closePath(); }
-    ctx.fill();
-  }
-  function draw() {
-    ctx.clearRect(0, 0, W, W);
-    const L = R * 0.3; ctx.lineWidth = 0.8;
-    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
-      const a = pts[i], b = pts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (d < L) { ctx.strokeStyle = `rgba(${a.c},${(1 - d / L) * 0.45})`; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
-    }
-    for (const p of pts) { ctx.fillStyle = `rgb(${p.c})`; mark(p); }
-  }
-  function step(ms) {
-    const ph = (ms % 10000) / 10000, g = 0.5 - 0.5 * Math.cos(ph * 6.283);   // smooth gather / release every 10 s
-    for (const p of pts) {
-      const [tx, ty] = target(p, ms, g);
-      p.vx = (p.vx + (tx - p.x) * 0.02) * 0.85; p.vy = (p.vy + (ty - p.y) * 0.02) * 0.85;
-      p.x += p.vx; p.y += p.vy;
-    }
-    draw(); requestAnimationFrame(step);
-  }
-  window.addEventListener("resize", size);
-  size();
   if (!reduce) requestAnimationFrame(step);
 })();
 </script>
