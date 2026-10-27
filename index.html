@@ -1,508 +1,269 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-
 <head>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-178523951-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aditya Dutt</title>
+<meta name="description" content="Aditya Dutt, Postdoctoral Associate, ECE, University of Florida. Multimodal learning, generative modeling for scientific data, structured latent spaces.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+/* Layout: single column, research-theme blocks with one published figure each, dated paper list */
+:root {
+  --bg: #ffffff; --fg: #1b1f24; --muted: #5d6670; --rule: #dde1e5;
+  --fig: #eef2f5; --fig-line: #c9d3dc; --chip: #f1f4f6;
+  --accent: #1f5f8b; --c1: #1f77b4; --c2: #d9822b; --c3: #2e9e6a;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "IBM Plex Serif", Georgia, serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15181b; --fg: #e6e9ec; --muted: #9aa3ad; --rule: #2c3137;
+  --fig: #20252b; --fig-line: #38404a; --chip: #1e2227;
+  --accent: #7fb6dd; --c1: #6fb0e6; --c2: #f0a45a; --c3: #5cc996; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #15181b; --fg: #e6e9ec; --muted: #9aa3ad; --rule: #2c3137;
+  --fig: #20252b; --fig-line: #38404a; --chip: #1e2227;
+  --accent: #7fb6dd; --c1: #6fb0e6; --c2: #f0a45a; --c3: #5cc996; color-scheme: dark }
 
-        gtag('config', 'UA-178523951-1');
-    </script>
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15.5px/1.6 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+main { max-width: 860px; margin: 0 auto; padding-block: 36px 56px; }
+a { color: var(--accent); text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; text-wrap: balance; }
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aditya Dutt</title>
-    <script src="https://use.fontawesome.com/d1341f9b7a.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/js/all.js"></script>
+.hero { position: relative; margin-bottom: 20px; }
+.hero canvas { display: block; width: 100%; height: 190px; }
 
-    <script defer src="script.js"></script>
+.hdr { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+.photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; flex: none; background: var(--fig); }
+.hdr > div { flex: 1 1 320px; min-width: 0; }
+h1 { font-size: 1.95rem; margin: 0 0 2px; line-height: 1.2; }
+.role { color: var(--muted); margin: 0 0 10px; }
+.links { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 500 0.86rem/1.6 var(--mono); }
+
+nav { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 24px 0 0; padding: 10px 0; border-block: 1px solid var(--rule); font: 500 0.78rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
+nav a { color: var(--muted); }
+nav a:hover { color: var(--accent); }
+
+.bio { margin: 22px 0 0; }
+.bio p { margin: 0 0 12px; max-width: 68ch; }
+.notice { display: inline-block; margin-top: 4px; padding: 6px 12px; border-radius: 6px; background: var(--chip); font-size: 0.95rem; }
+.notice b { color: var(--accent); }
+
+h2 { font-size: 1.25rem; margin: 44px 0 16px; scroll-margin-top: 16px; }
+h2::before { content: ""; display: inline-block; width: 10px; height: 10px; background: var(--accent); border-radius: 2px; margin-right: 10px; vertical-align: 1px; }
+h3 { font-size: 1.05rem; margin: 0 0 6px; color: var(--accent); }
+
+.themes { display: grid; gap: 32px; }
+.theme { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: center; }
+.theme:nth-child(even) .fig { order: 2; }
+.theme.wide { grid-template-columns: 1fr; gap: 14px; }
+.theme.wide .fig { order: 0; }
+.theme p { margin: 0 0 8px; }
+.papers { font: 400 0.8rem/1.5 var(--mono); color: var(--muted); }
+.fig { position: relative; max-width: 100%; border-radius: 8px; border: 1px solid var(--fig-line); overflow: hidden;
+  background: var(--fig) repeating-linear-gradient(135deg, transparent 0 9px, var(--fig-line) 9px 10px); min-height: 120px;
+  display: grid; place-items: center; text-align: center; font: 500 0.68rem/1.35 var(--mono); color: var(--muted); }
+.fig > span { background: var(--fig); padding: 3px 6px; border-radius: 3px; margin: 8px; }
+.fig:has(img) > span { display: none; }
+.fig img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 8px; }
+.fig.natural { min-height: 0; }
+.fig.natural img { position: static; height: auto; display: block; }
+.theme:not(.wide) .fig { aspect-ratio: 16 / 9; }
+
+ol.pubs { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+ol.pubs li { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; }
+.yr { font: 500 0.8rem/1.6 var(--mono); color: var(--accent); }
+.t { font-weight: 600; } .v { font-style: italic; }
+.tag { font: 500 0.7rem/1 var(--mono); padding: 2px 6px; border-radius: 4px; background: var(--chip); color: var(--muted); }
+
+.list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.list li { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; }
+.exp { display: grid; gap: 14px; }
+.row { display: flex; justify-content: space-between; gap: 4px 16px; flex-wrap: wrap; }
+.row > div:first-child { flex: 1 1 300px; min-width: 0; }
+.when { color: var(--muted); font: 400 0.82rem/1.7 var(--mono); white-space: nowrap; }
+.sub { color: var(--muted); font-size: 0.92rem; margin: 2px 0 0; }
+footer { margin-top: 48px; font: 400 0.78rem/1.4 var(--mono); color: var(--muted); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .fig { transition: transform .25s ease, box-shadow .25s ease; }
+  .theme:hover .fig { transform: translateY(-3px) scale(1.012); box-shadow: 0 10px 24px -12px rgba(0,0,0,.35); }
+  main a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .2s ease; }
+  main a:hover { background-size: 100% 1px; }
+  ol.pubs li { transition: transform .2s ease; }
+  ol.pubs li:hover { transform: translateX(4px); }
+}
+@media (prefers-reduced-motion: reduce) { main a:hover { text-decoration: underline; } }
+@media (max-width: 680px) { .theme { grid-template-columns: 1fr; } .theme:nth-child(even) .fig { order: 0; } h1 { font-size: 1.7rem; } }
+</style>
 </head>
-
-
-
-
-
 <body>
+<main>
 
+<div class="hero" aria-hidden="true">
+  <canvas id="manifold"></canvas>
+</div>
 
-
-    <div class="text-right" style="
-    height: 38px;
-">
-        <!-- <button type="button" class="btn  btn1"><span>📄 Resume</span>
-        </button> -->
+<div class="hdr">
+  <img class="photo" src="images/profile_picture.jpeg" alt="Aditya Dutt">
+  <div>
+    <h1>Aditya Dutt, Ph.D.</h1>
+    <p class="role">Postdoctoral Associate, Electrical &amp; Computer Engineering, University of Florida</p>
+    <div class="links">
+      <a href="CV_AdityaDutt.pdf">CV</a>
+      <a href="mailto:aditya.dutt@ufl.edu">Email</a>
+      <a href="https://scholar.google.com/citations?user=0uWY-3IAAAAJ&amp;hl=en">Scholar</a>
+      <a href="https://github.com/AdityaDutt">GitHub</a>
+      <a href="https://www.linkedin.com/in/adityadutt12/">LinkedIn</a>
+      <a href="https://adityadutt.medium.com/">Blog</a>
     </div>
-
-
-
-
-
-
-
-    <!-- Logo container -->
-    <div class="logo-container">
-        <a href="https://www.linkedin.com/in/adityadutt12/" target="_blank" class="icon-container">
-            <img class="icon-img" src="images/LI-In-Bug.png" alt="linkin">
-        </a>
-
-        <a href="mailto://adityadutt1996@gmail.com" target="_blank" class="icon-container">
-            <img class="icon-img" src="images/gmail.png" alt="github">
-        </a>
-
-        <a href="https://github.com/AdityaDutt" target="_blank" class="icon-container">
-            <img class="icon-img" src="images/Github-Logo.png" alt="github">
-        </a>
-
-
-    </div>
-
-
-
-
-
-
-
-
-
-    <!-- Header container -->
-
-    <div class="container-header">
-
-        <div class="profile-card__img">
-            <img src="images/profile_picture.jpeg" alt="profile card">
-        </div>
-        <div class="mid-part">
-            <div class="hi">
-                <h1>
-                    Hi,
-                    <span class="wave">👋🏼 </span>
-                </h1>
-            </div>
-            <h1 class="name" style="display:flex;justify-content:center;align-items:center; ">
-                I'm Aditya <img align="center" alt="codeSTACKr.com" width="62px" src="https://cdn.freebiesupply.com/images/thumbs/2x/florida-gators-logo.png" />
-
-
-            </h1>
-            <h6 class="intro-line"> Machine Learning PhD Student</h6>
-            <div class="type">
-                <h1 class="typing"> </h1>
-            </div>
-            <br>
-            <p class="describe-line"> I am a PhD student at the University of Florida. I completed my Masters in Computer Science from University of Florida in 2019. </p> 
-            <p class="describe-line"> My research interests include applying Machine Learning for acoustics and image segmentation. Currently, I am researching on emotion recognition from human speech and music. I like to write blogs on Machine Learning in my spare time. Check out my blog on Medium: @adityadutt.medium.com. </p>
-            <!--
-            <div>
-                <p class ="lab-line"><span style="color:#F9813A;  font-family:'Lato';" > Research Lab :</span> <a href="https://faculty.eng.ufl.edu/computing-for-life/"> &nbsp;<span style="color:#393e46;  font-family: 'Lato';" >  Computing For Life </span> </a>  <span style="color:#4A4A48;  font-family: 'Epilogue';" >  , CISE Department, UF</span> </p>
-            </div>
-            -->
-        </div>
-    </div>
-
-    <br>
-    <br>
-
-    <!-- Button container -->
-    <div class="button-conatiner">
-        <div style="display:flex;justify-content:center;align-items:center;">
-            <button type="button" class="btn  btn1"><span><a href="Resume/AdityaDuttResume.pdf"
-                        target="_blank">Resume</a></span>
-            </button>
-            <button type="button" class="btn  btn1 projBtn"><span><a href="#">Projects</a></span>
-            </button>
-        </div>
-        <div style="display:flex;justify-content:center;align-items:center;">
-            <button type="button" class="btn  btn1 expBtn"><span> <a href="#">Experience</a></span>
-            </button>
-            <button type="button" class="btn  btn1 achivBtn"><span><a href="">Research</a></span>
-            </button>
-        
-        </div>
-
-        <div style="display:flex;justify-content:center;align-items:center;">
-            <button type="button" class="btn  btn1 achivBtn"><span><a href="https://adityadutt.medium.com/">Blogs</a></span>
-            </button>
-
-        </div>
-
-    </div>
-
-
-
-
-
-
-
-
-    <!-- Skills container -->
-
-    <div class="skillz">
-        <h3 style=" text-align: center;">SKILLS &nbsp; ⚙️⛏🌟 <br> <br> </h3>
-
-        <div class="skills">
-
-            <br>
-            <br>
-
-            <p id="bold-letters" class="describe-line">Languages : Python, SQL, MATLAB, Elixir, C/ C++, HTML, CSS</p>
-            <p id="bold-letters" class="describe-line">Tools/ Libraries : Keras, TensorFlow, Tensor Board, Pandas, Geopandas, NumPy, <br> Scikit-Learn, OpenCV, Matplotlib, Plotly, PyQt, Seaborn, Spacy,
-NLTK, Beautiful Soup, Jupyter Notebook, QGIS</p>
-
-
-
-
-    <!-- Footer container -->
-    <div id="achiv" class="achivements">
-        <h2 class="achiv-head">Research Papers 🎓💡  </h2>
-        <div class="achiv-cont">
-            <ul class="list-group ">
-                <li class="list-group-item "> Kumar, Sushil, et al. "Colour image segmentation with histogram and homogeneity histogram difference using evolutionary algorithms." International Journal of Machine Learning and Cybernetics 9.1 (2018): 163-183.
-                </li>
-                <li class="list-group-item  "> Aditya Dutt, Richa Dutt, Hema N. (2017). Development of Cost-Effective Substitute of Braille Tactile Display Operated by Linear
-Actuators: IEEE Xplore.
-                </li>
-
-            </ul>
-        </div>
-    </div>
-
-
-
-
-
-    <!-- Footer container -->
-  <div id="achiv" class="achivements">
-        <h2 class="achiv-head" style="font-family: 'Major Mono Display', monospace;">Academic Research 🎓💡 </h2>
-        <div class="achiv-cont">
-
-
-            <ul class="list-group "> 
-                <h6 class="exp-company">Speech Emotion Recognition  &nbsp; Jan 2020 - Present
-                </h6>
-
-                <li class="list-group-item ">• Researching on detecting different emotions from speech by analyzing spectrograms as a visual representation speech features such as the pause between each word, pitch, loudness, and more.
-                </li>
-                <li class="list-group-item ">• Testing an analytical blend of words with aggregate factors (pauses, pitch, etc.) to more accurately do sentiment analysis including which may alert to security breaches or health issues.
-
-                </li>
-            </ul>
-
-
-
-
-
-            <ul class="list-group "> 
-                <h6 class="exp-company">Lexicon-Based Segmentation of Offline Cursive Handwriting &nbsp; Jan 2019 - Dec 2020
-                </h6>
-
-                <li class="list-group-item ">Worked on a project to build a machine learning model that can recognize cursive handwriting, which is a more difficult task than
-recognizing printed characters. The objective was to develop algorithm that can understand handwriting and accurately convert
-handwritten text to printed documents. The application is useful for reading postal addresses, bank check amounts, and forms.
-                </li>
-                <li class="list-group-item ">• Implemented a combination of connected component analysis and distance transform to segment (or oversegment) word into
-possible characters. The small segments which are not characters can be used as a good dataset to test outlier detection
-algorithms.
-
-                </li>
-                <li class="list-group-item ">• Developed a robust peak detection algorithm to detect peaks pointed in all directions in binary images which correctly splits a
-word into possible characters. Used a dynamic programming algorithm and CNN to find a match score between each string in the
-lexicon (dictionary) and the segmented parts of word image.
-                </li>
-            </ul>
-
-
-
-        </div>
-    </div>
-
-
-
-    <!-- Exp - container -->
-    <div id='exp' class="Experience">
-        <h2 class="exp-head">Experience 👔 💼 </h2>
-        <div class="exp-content">
-            <ul class="list-group ">
-                <h5 class="exp-position">Graduate Research Assistant</h5>
-                <h6 class="exp-company">ESSIE Department, University of Florida,&nbsp; Jan 2021 - Present </h6>
-                <li class="list-group-item  "> ⚙️ The goal of the project is to build a deep learning framework to translate different streams of data from individual sensor into a
-shared manifold space.
-                </li>
-                <li class="list-group-item "> ⚙️ Different sensors require different analysis models tuned for a particular task. Using this framework, embeddings from all
-frameworks can be mapped into a shared common space.
-                </li>
-                <li class="list-group-item  "> ⚙️ Now, a single analysis model can be used which is sensor independent. It will help in saving development costs for separate
-analysis models for every sensor.
-                </li>
-
-            </ul>
-
-            <ul class="list-group ">
-                <h5 class="exp-position">Graduate Research Assistant</h5>
-                <h6 class="exp-company">IFAS, University of Florida,&nbsp; Jan 2020 - Dec 2020 </h6>
-                <li class="list-group-item  "> ⚙️ Lead the construction of a custom SQL database to gather and analyze data from India’s National Sample Survey Office. Data
-is comprised of housing conditions, employment and agricultural assessment surveys of India.
-                </li>
-                <li class="list-group-item "> ⚙️ Implementing autoencoder and regression methods to estimate indicators of poverty and food security across economically depressed
-regions of India by analyzing regional patterns of land cover change.
-                </li>
-                <li class="list-group-item  "> ⚙️ Predict future years socio-economic features using census data and poverty indicators.
-                </li>
-
-            </ul>
-
-            <ul class="list-group ">
-                <h5 class="exp-position">Graduate Teaching Assistant</h5>
-                <h6 class="exp-company">Computer Science Department, University of Florida,&nbsp; Aug 2019 - Nov 2019
-                </h6>
-                <li class="list-group-item ">Course: Distributed Operating Systems
-                </li>
-
-                <li class="list-group-item "> ⚙️ Created course assignments that were approved by the supervising professor. Managed one Teaching Assistant and one Course
-Grader. Held weekly office hours, graded coursework, and championed student development.
-                </li>
-                <li class="list-group-item "> ⚙️ Collaborated in creating projects (and grading system) based on Twitter implementation and gossip algorithms in Elixir using the
-actor model to simulate the dissemination of information across a network using Honeycomb and 3D Torus.
-                </li>
-                <li class="list-group-item "> ⚙️ Received an end-of-semester evaluation score of “Outstanding” based on student feedback.
-                </li>
-
-            </ul>
-
-            <ul class="list-group ">
-                <h5 class="exp-position">IOT Intern</h5>
-                <h6 class="exp-company">IIT Delhi, India &nbsp; Jun 2016 - Jul 2016</h6>
-                <li class="list-group-item"> ⚙️ Tasked with the challenge of controlling the rpm of a DC motor clock so that it synchronized with data from a GPS using Beagle
-Bone.</li>
-                <li class="list-group-item "> ⚙️ Created a webpage using HTML, CSS, and JavaScript to monitor live data from microcontroller to detect and resolve time and
-clock errors.
-                </li>
-                <li class="list-group-item "> ⚙️ Gathered data from Arduino and Wi-Fi module (ESP8266) and stored it in the SQL database. Next, pushed data from database on
-the webpage allowing microcontroller hardware to be controlled remotely.
-                </li>
-
-            </ul>
-
-
-        </div>
-    </div>
-
-
-
-
-
-
-    <!-- project container -->
-    <div id="proj" class="projects">
-        <h2 class="proj-head" >Projects 👨🏽‍💻 </h2>
-        <br>
-        <br>
-        <div class="page">
-            <div class="page__demo">
-                <div class="page__container">
-                    <div class="project project_type">
-                            <h6 class="exp-company" style="color:#FF7B54; font-family: 'Courier Prime', monospace; text-align: center;background-color:#FFFFFF;border-radius:10px;">Music Genre Classification</h6>
-
-                        <div class="project__previewbox">
-
-                            <img src="images/audio_modified.jpg"  class="project__preview" alt>
-                            <span class="project__label">
-                                Used LSTM and CNN to classify music into progessive and non-progressive rock music.
-                                <br>
-                                <a href="https://github.com/AdityaDutt/Music-Genre-Classification" target="_blank">
-                                    <i class="fab fa-github"></i> Github
-                                </a>
-                            </span>
-
-                        </div>
-                    </div>
-
-                    <div class="project project_type">
-                            <h6 class="exp-company" style="color:#FF7B54; font-family: 'Courier Prime', monospace; text-align: center;background-color:#FFFFFF;border-radius:10px;">Object Tracking using SIFT Algorithm</h6>
-
-                        <div class="project__previewbox">
-
-                            <img src="images/sift1_modified.jpg"  class="project__preview" alt>
-                            <span class="project__label">
-                                Demonstration of sift algorithm to track objects and observing the effect of each parameter on performance.
-                                <br>
-                                <a href="https://github.com/AdityaDutt/SIFT-Algorithm" target="_blank">
-                                    <i class="fab fa-github"></i> Github
-                                </a>
-                            </span>
-
-                        </div>
-                    </div>
-
-                    <div class="project project_type">
-                            <h6 class="exp-company" style="color:#FF7B54; font-family: 'Courier Prime', monospace; text-align: center;">Bitcoin Simulator </h6>
-
-                        <div class="project__previewbox">
-
-                            <img src="images/bitcoin_modified.jpg" class="project__preview" alt>
-                            <span class="project__label">
-                                Implementation of Bitcoin protocol to simulate bitcoin mining, wallet and transactions.
-                                <br>
-                                <a href="https://github.com/AdityaDutt/Bitcoin-Simulator" target="_blank">
-                                    <i class="fab fa-github"></i> Github
-                                </a>
-                            </span>
-
-                        </div>
-                    </div>
-
-                    <div class="project project_type">
-                            <h6 class="exp-company" style="color:#FF7B54; font-family: 'Courier Prime', monospace; text-align: center;">Image segmentation Methods Demo</h6>
-
-                        <div class="project__previewbox">
-
-                            <img src="images/image_segmentation_modified.jpg" class="project__preview" alt>
-                            <span class="project__label">
-                                Demonstration of a few useful segmentation algorithms like Canny Edge Detector, Snakes, Active Contour and KNN.
-                                <br>
-                                <a href="https://github.com/AdityaDutt/Image-segmentation-overview"
-                                    target="_blank">
-                                    <i class="fab fa-github"></i> Github
-                                </a>
-                            </span>
-
-                        </div>
-                    </div>
-
-                    <div class="project project_type">
-                            <h6 class="exp-company" style="color:#FF7B54; font-family: 'Courier Prime', monospace; text-align: center;">Gossip Algorithm</h6>
-
-                        <div class="project__previewbox">
-
-                            <img src="images/network_modified.jpg" class="project__preview" alt>
-                            <span class="project__label">
-                                Implementation of gossip protocols for information dissemination in a network with different kinds of topologies.
-                                <br>
-                                <a href="https://github.com/AdityaDutt/Gossip-Simulator" target="_blank">
-                                    <i class="fab fa-github"></i> Github
-                                </a>
-                            </span>
-
-                        </div>
-                    </div>
-
-                    <div class="project project_type">
-                            <h6 class="exp-company" style="color:#FF7B54; font-family: 'Courier Prime', monospace; text-align: center;">Cursive Handwriting Segmentation and Recognition Library</h6>
-
-                        <div class="project__previewbox">
-
-                            <img src="images/handwriting_modified.jpg" class="project__preview" alt>
-                            <span class="project__label">
-                                A Cursive Handwriting Segmentation and recognition Library. Multiple models are trained using Transfer Learning, One Shot Learning, CNN, and MLP. Click 'Demo' to see the model used for recognizing cursive chaarcters.
-                                <br>
-                                <a href="https://github.com/AdityaDutt/CursiveHandwritingRecognition" target="_blank">
-                                    <i class="fab fa-github"></i> Github
-                                </a>
-                                <a href="http://cursive-recognition.herokuapp.com/" target="_blank">
-                                <u> Demo </u>
-                                </a>
-
-                            </span>
-
-                        </div>
-                    </div>
-
-                    <div class="project project_type">
-                            <h6 class="exp-company" style="color:#FF7B54; font-family: 'Courier Prime', monospace; text-align: center;">Cancer Cell Segmentation using H&E Slides</h6>
-
-                        <div class="project__previewbox">
-
-                            <img src="images/cancer_icon.png" class="project__preview" alt>
-                            <span class="project__label">
-                                The aim of project was to segment cells in H&E slides. The inconsistent background, different contrast in different slides make the segmentation really challenging. I implemented combinations of different algorithm like thresholding methods, active contours, and U-Nets.
-                                <br>
-                                <a href="https://cancer-segmentation.herokuapp.com/" target="_blank">
-                                <u> Demo </u>
-                                </a>
-
-                            </span>
-
-                        </div>
-                    </div>
-
-                    <div class="project project_type">
-                            <h6 class="exp-company" style="color:#FF7B54; font-family: 'Courier Prime', monospace; text-align: center;">Bird Species Classification using birdcalls and songs</h6>
-
-                        <div class="project__previewbox">
-
-                            <img src="images/bird_icon1.png" class="project__preview" alt>
-                            <span class="project__label">
-                                Built a deep learning model to classify 9 bird species by songs. Spectrograms were used as features. A Siamese network along with 1D dilated convolutions and Batch normalization layers were used. Accuracy on test set was around 97%.
-                                <br>
-                                <a href="https://github.com/AdityaDutt/Bird-Song-Classification" target="_blank">
-                                    <i class="fab fa-github"></i> Github
-                                </a>
-                                <a href="https://towardsdatascience.com/bird-song-classification-using-siamese-networks-and-dilated-convolutions-3b38a115bc1" target="_blank">
-                                <u> Medium Article </u>
-                                </a>
-
-                            </span>
-
-                        </div>
-                    </div>
-
-
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-
-
-    <div id='exp' class="Experience">
-        <h2 class="exp-head">Achievements 🎖🎖 </h2>
-        <div class="exp-content">
-            <ul class="list-group ">
-                <h5 class="exp-position">⚙️ Robotics Competition: Robometry &nbsp; IIT Roorkee Saharanpur Campus, 2014</h5>
-                <li class="list-group-item  ">  Secued 1st Place. Our team built an autonomous line follower robot which completed all the tasks successfully. &nbsp; &nbsp;
-                </li>
-
-            </ul>
-
-            <ul class="list-group ">
-                <h5 class="exp-position">⚙️ Autonomous Robotics Competition: Nightwing, 2014 </h5>
-                <li class="list-group-item  "> Secued 3rd Place. The goal was to finish the race while following the line. Our team built an autonomous line follower robot. &nbsp; &nbsp; 
-                </li>
-
-            </ul>
-
-
-        </div>
-    </div>
-
-
-
-    <div id='exp' class="Experience">
-        <h2 class="exp-head">Volunteer </h2>
-        <div class="exp-content">
-            <ul class="list-group ">
-                <h5 class="exp-position">⚙️ Organizing member of UCR Robotics club in JIIT, Noida, 2015</h5>
-                <li class="list-group-item  ">  • Designed the autonomous robotics competition track for line follower and managed track designing. &nbsp; &nbsp;
-                </li>
-                <li class="list-group-item  ">• Created event rules and scoring scheme. &nbsp; &nbsp;
-                </li>
-                <a href="https://ucrjiit.tech/"><i
-                                class="fas fa-link"></i>UCR Club JIIT</a>
-
-            </ul>
-
-
-        </div>
-    </div>
-
-
-
+  </div>
+</div>
+
+<nav aria-label="Sections">
+  <a href="#research">Research</a><a href="#publications">Publications</a><a href="#presentations">Presentations</a><a href="#experience">Experience</a><a href="#teaching">Teaching</a>
+</nav>
+
+<div class="bio">
+  <p>I develop machine learning for scientific data where sensors are heterogeneous and labels are scarce: aligning modalities in shared latent spaces, generating realistic synthetic data to train downstream models, and structuring embeddings so they transfer across domains. Applications include remote sensing, plant root phenotyping from X-ray CT, crop phenotyping from drone imagery, computational pathology, and socioeconomic mapping.</p>
+  <p>I am a Postdoctoral Associate in the Machine Learning and Sensing Lab at the University of Florida, working with <a href="https://faculty.eng.ufl.edu/machine-learning/">Dr. Alina Zare</a>. I received my Ph.D. in Computer and Information Science and Engineering from UF in 2025.</p>
+  <p class="notice"><b>On the job market:</b> tenure-track faculty positions, 2026–27.</p>
+</div>
+
+<h2 id="research">Research</h2>
+<div class="themes">
+  <div class="theme">
+    <div class="fig"><span>COMMANet shared manifold<br>(JSTARS 2022)</span><img src="images/fig-commanet.png" alt="Shared manifold aligning hyperspectral and LiDAR embeddings by class" onerror="this.remove()"></div>
+    <div><h3>Multimodal alignment and fusion</h3>
+      <p>Mapping hyperspectral, LiDAR, SAR and optical data into one class-discriminative space, so one model serves every sensor and a missing sensor can be predicted from the others.</p>
+      <div class="papers">JSTARS 2022 · IGARSS 2025</div></div>
+  </div>
+  <div class="theme wide">
+    <div class="fig natural"><span>Root generation figure<br>(CANVAS 2026)</span><img src="images/fig-roots.png" alt="Root skeletons, generated 3D roots, and generated X-ray CT of a soil core" onerror="this.parentNode.classList.remove('natural');this.remove()"></div>
+    <div><h3>Generative modeling for scientific data</h3>
+      <p>Translating simulated measurements into realistic ones: sampled root skeletons condition generated 3D root geometry, which is then rendered as synthetic X-ray CT of soil cores, so segmentation models can be trained without costly manual annotation.</p>
+      <div class="papers">Dissertation 2025 · CANVAS 2025 · CANVAS 2026</div></div>
+  </div>
+  <div class="theme">
+    <div class="fig"><span>JUGAAD indicator map<br>(arXiv 2026)</span><img src="images/fig-jugaad.png" alt="Downscaled socioeconomic indicator map of India" onerror="this.remove()"></div>
+    <div><h3>Structured latent spaces under limited supervision</h3>
+      <p>Contrastive and triplet objectives that shape embedding geometry, autoencoder representations for downscaling survey indicators across India, and weakly supervised graph networks trained on synthetic and incomplete labels.</p>
+      <div class="papers">TASLP 2023 · arXiv 2026</div></div>
+  </div>
+</div>
+
+<h2 id="publications">Publications</h2>
+<ol class="pubs">
+  <li><span class="yr">2026</span><div><span class="t">Joint utilization of geospatial and census proxies for autoencoder-assisted downscaling (JUGAAD) of socioeconomic indicators in India.</span> <b>A. Dutt</b>, P. Gader, A. Singh. <span class="v">arXiv preprint</span>. <span class="tag">preprint</span> <a href="https://arxiv.org/abs/2607.20559">arXiv</a></div></li>
+  <li><span class="yr">2025</span><div><span class="t">Multi-task learning with multi-annotation triplet loss for improved object detection.</span> M. Zhou, <b>A. Dutt</b>, A. Zare. <span class="v">IEEE International Geoscience and Remote Sensing Symposium (IGARSS)</span>. <a href="https://arxiv.org/abs/2504.08054">arXiv</a></div></li>
+  <li><span class="yr">2025</span><div><span class="t">A multimodal alignment network for domain translation and fusion.</span> <b>A. Dutt</b>. <span class="v">Ph.D. Dissertation, University of Florida</span>.</div></li>
+  <li><span class="yr">2023</span><div><span class="t">Wavelet multiresolution analysis based speech emotion recognition system using 1D CNN LSTM networks.</span> <b>A. Dutt</b>, P. Gader. <span class="v">IEEE/ACM Transactions on Audio, Speech, and Language Processing</span>, 31, 2043–2054.
+    <!-- TODO: replace with the paper's DOI link -->
+    <a href="https://ieeexplore.ieee.org/search/searchresult.jsp?queryText=Wavelet%20multiresolution%20analysis%20based%20speech%20emotion%20recognition%20Dutt">IEEE Xplore</a></div></li>
+  <li><span class="yr">2022</span><div><span class="t">Shared manifold learning using a triplet network for multiple sensor translation and fusion with missing data.</span> <b>A. Dutt</b>, A. Zare, P. Gader. <span class="v">IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing</span>, 15, 9439–9456. <a href="https://doi.org/10.1109/JSTARS.2022.3217485">Paper</a> · <a href="https://arxiv.org/abs/2210.17311">arXiv</a></div></li>
+  <li><span class="yr">2018</span><div><span class="t">Colour image segmentation with histogram and homogeneity histogram difference using evolutionary algorithms.</span> S. Kumar, M. Pant, M. Kumar, <b>A. Dutt</b>. <span class="v">International Journal of Machine Learning and Cybernetics</span>, 9, 163–183.</div></li>
+</ol>
+
+<h2 id="presentations">Presentations</h2>
+<ul class="list">
+  <li><span class="yr">2026</span><div>FUSION 1.0: Integrating kidney whole slide histology with 10x Visium spatial transcriptomics for FTU-level analysis. I. Ansari, <b>A. Dutt</b>, P. Sarder. Poster, UF College of Medicine Celebration of Research.</div></li>
+  <li><span class="yr">2025</span><div>Synthetic root architecture modeling–guided segmentation of real X-ray CT point clouds of soil cores using weak ground truth labels in switchgrass. J. Diaz, <b>A. Dutt</b>, A. Zare, et al. Oral, CANVAS 2025, Utah.</div></li>
+  <li><span class="yr">2025</span><div>Getting to the core of roots: segmentation of CT-scan point clouds using weak ground truths. J. Diaz, <b>A. Dutt</b>, A. Zare. Poster, AI Days 2025, UF.</div></li>
+  <li><span class="yr">2024</span><div>COMMANet: a contrastive multi-modal alignment network for domain translation and fusion. <b>A. Dutt</b>. Poster, AI Days 2024, UF.</div></li>
+</ul>
+
+<h2 id="experience">Experience</h2>
+<div class="exp">
+  <div><div class="row"><div><strong>Postdoctoral Associate</strong>, Machine Learning and Sensing Lab, UF (Dr. Alina Zare)</div><div class="when">2025 – present</div></div>
+    <p class="sub">Diffusion and graph-based generative models for X-ray CT root segmentation (DSFAS); spatiotemporal trait prediction for switchgrass from drone imagery.</p></div>
+  <div><div class="row"><div><strong>Postdoctoral Associate</strong>, Computational Microscopy Imaging Lab, UF (Dr. Pinaki Sarder)</div><div class="when">Nov 2025 – Feb 2026</div></div>
+    <p class="sub">Project manager for computational pathology software integrating kidney histology with spatial transcriptomics (FUSION 1.0).</p></div>
+  <div><div class="row"><div><strong>Graduate Research Assistant</strong>, University of Florida</div><div class="when">2020 – 2025</div></div>
+    <p class="sub">Multi-sensor translation and fusion with missing data; root segmentation from CT; socioeconomic downscaling for rural India.</p></div>
+</div>
+
+<h2 id="teaching">Teaching &amp; Service</h2>
+<div class="exp">
+  <div><div class="row"><div><strong>Graduate Teaching Assistant</strong>, Distributed Operating Systems, UF</div><div class="when">Fall 2019</div></div></div>
+  <div><div class="row"><div><strong>Mentor</strong>, two M.S. students: speech emotion classification; hyperspectral–LiDAR land-cover classification</div><div class="when">2022</div></div></div>
+  <div><div class="row"><div><strong>Reviewer</strong>, IEEE TGRS, IEEE Sensors Journal, IEEE GRSL</div></div></div>
+</div>
+
+<footer>Last updated October 2026</footer>
+</main>
+
+<script>
+/* Header: the same points regroup two ways. By shape: three clusters of mixed colors.
+   By color: a flowing ribbon sorted along the UF-orange-to-blue gradient. */
+(function () {
+  const cv = document.getElementById("manifold"), ctx = cv.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const STOPS = [[250, 70, 22], [255, 46, 126], [138, 63, 252], [47, 128, 255]]; // UF orange, pink, violet, blue
+  function grad(t) {
+    const x = t * (STOPS.length - 1), i = Math.min(Math.floor(x), STOPS.length - 2), f = x - i;
+    const a = STOPS[i], b = STOPS[i + 1];
+    return `rgb(${a.map((v, k) => Math.round(v + (b[k] - v) * f)).join(",")})`;
+  }
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const N = 210, pts = [];
+  for (let i = 0; i < N; i++) {
+    const t = Math.random(), s = i % 3, ang = rnd(0, Math.PI * 2), r = Math.sqrt(Math.random());
+    pts.push({ t, s, col: grad(t), ph: rnd(0, 6.28), sz: rnd(2.2, 3.6),
+      scatter: [rnd(0.03, 0.97), rnd(0.08, 0.92)],
+      shape: [0.2 + s * 0.3 + Math.cos(ang) * r * 0.1, 0.5 + Math.sin(ang) * r * 0.36],
+      jit: rnd(-1, 1) });
+  }
+  // keyframe order: scatter -> shape -> color -> scatter ...
+  const ORDER = ["scatter", "shape", "color"], MOVE = 2300, HOLD = 2600, SEG = MOVE + HOLD;
+  function target(p, mode, ms) {
+    if (mode === "color") {
+      const x = 0.05 + 0.9 * p.t;
+      return [x, 0.5 + 0.2 * Math.sin(p.t * 9.4 + ms / 1400) + p.jit * 0.07];
+    }
+    return p[mode];
+  }
+  const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  let W = 0, H = 0;
+  function resize() {
+    const r = cv.getBoundingClientRect(); if (!r.width) return;
+    const d = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+    if (reduce) draw(0);
+  }
+  function mark(p, x, y, sz) {
+    ctx.beginPath();
+    if (p.s === 0) ctx.arc(x, y, sz, 0, Math.PI * 2);
+    else if (p.s === 1) ctx.rect(x - sz, y - sz, sz * 2, sz * 2);
+    else { ctx.moveTo(x, y - sz * 1.25); ctx.lineTo(x + sz * 1.15, y + sz * 0.85); ctx.lineTo(x - sz * 1.15, y + sz * 0.85); ctx.closePath(); }
+    ctx.fill();
+  }
+  function draw(ms) {
+    let from = "color", to = "color", k = 1;
+    if (!reduce) {
+      const seg = Math.floor(ms / SEG), local = ms % SEG;
+      from = ORDER[seg % 3]; to = ORDER[(seg + 1) % 3]; k = local < MOVE ? ease(local / MOVE) : 1;
+      if (k === 1) from = to;
+    }
+    ctx.clearRect(0, 0, W, H);
+    for (const p of pts) {
+      const a = target(p, from, ms), b = target(p, to, ms);
+      const wob = reduce ? 0 : 2.2 * Math.sin(ms / 800 + p.ph);
+      const x = (a[0] + (b[0] - a[0]) * k) * W + wob, y = (a[1] + (b[1] - a[1]) * k) * H + wob * 0.7;
+      ctx.fillStyle = p.col;
+      ctx.globalAlpha = 0.12; mark(p, x, y, p.sz * 2.2);   // soft halo
+      ctx.globalAlpha = 0.9; mark(p, x, y, p.sz);
+    }
+    ctx.globalAlpha = 1;
+  }
+  function loop(ms) { draw(ms); requestAnimationFrame(loop); }
+  resize(); window.addEventListener("resize", resize);
+  if (!reduce) requestAnimationFrame(loop);
+})();
+</script>
 </body>
-
 </html>
