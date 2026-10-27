@@ -28,25 +28,48 @@
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; }
-main { max-width: 1120px; margin: 0 auto; padding-block: 8px 64px;
-  padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
-@media (max-width: 600px) { main { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } }
+/* profile column on the left (GitHub-style), content on the right */
+.shell { max-width: 1320px; margin: 0 auto; display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 64px; padding-block: 8px 64px;
+  padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); }
+main { min-width: 0; }
+@media (max-width: 960px) { .shell { grid-template-columns: 1fr; gap: 28px; } }
+@media (max-width: 600px) { .shell { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } }
 a { color: var(--accent); text-decoration: none; }
 a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
 h1, h2, h3 { font-weight: 600; text-wrap: balance; letter-spacing: -0.01em; }
 
 .hero { position: relative; width: 100%; }
-.hero canvas { display: block; width: 100%; height: 280px; cursor: crosshair; touch-action: pan-y; }
-@media (max-width: 600px) { .hero canvas { height: 200px; } }
+.hero canvas { display: block; width: 100%; height: 360px; cursor: crosshair; touch-action: pan-y; }
+@media (max-width: 600px) { .hero canvas { height: 240px; } }
+.wave { position: absolute; right: max(32px, env(safe-area-inset-right, 0px)); bottom: 14px; display: inline-flex; align-items: center; gap: 8px;
+  font: 600 0.9rem/1 var(--font); color: var(--fg); background: var(--bg); padding: 9px 16px 9px 12px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid transparent; background: linear-gradient(var(--bg), var(--bg)) padding-box, var(--grad) border-box; }
+.wave svg { width: 18px; height: 18px; }
+.wave:hover { box-shadow: 0 6px 18px -8px rgba(138, 63, 252, .55); }
+.wave:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) { .wave { transition: box-shadow .2s, transform .2s; } .wave:active { transform: scale(.96); } }
+@media (max-width: 600px) { .wave { right: max(16px, env(safe-area-inset-right, 0px)); bottom: 10px; font-size: 0.85rem; } }
 
-.hdr { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
-.photo { width: 132px; height: 132px; border-radius: 50%; object-fit: cover; flex: none; background: var(--fig); }
-.hdr > div { flex: 1 1 320px; min-width: 0; }
-h1 { font-size: 2.3rem; margin: 0 0 2px; line-height: 1.15; font-weight: 700; }
-.role { color: var(--muted); margin: 0 0 12px; font-size: 1.05rem; }
-.links { display: flex; flex-wrap: wrap; gap: 6px 18px; font-weight: 600; font-size: 0.95rem; }
+.side { position: sticky; top: 20px; align-self: start; display: grid; gap: 16px; }
+.photo { width: 100%; max-width: 280px; aspect-ratio: 1; border-radius: 50%; object-fit: cover; background: var(--fig); border: 1px solid var(--rule); }
+h1 { font-size: 1.9rem; margin: 0; line-height: 1.15; font-weight: 700; }
+.handle { color: var(--muted); font-size: 1.15rem; margin: 2px 0 0; }
+.cvbtn { display: block; text-align: center; padding: 8px 12px; border: 1px solid var(--rule); border-radius: 8px; font-weight: 600; color: var(--fg); background: var(--chip); }
+.cvbtn:hover { border-color: var(--accent); color: var(--accent); }
+.meta, .links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 0.95rem; }
+.meta li, .links li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: start; overflow-wrap: anywhere; }
+.meta svg, .links svg { width: 16px; height: 16px; margin-top: 4px; color: var(--muted); }
+.links { padding-top: 14px; border-top: 1px solid var(--rule); font-weight: 600; }
+.side .notice { margin: 0; display: block; line-height: 1.5; }
+.side .notice::before { display: inline-block; margin-right: 8px; vertical-align: 1px; }
+@media (max-width: 960px) {
+  .side { position: static; grid-template-columns: 160px minmax(0, 1fr); align-items: center; column-gap: 24px; }
+  .side .photo { grid-row: span 2; }
+  .side > :not(.photo):not(.who) { grid-column: 1 / -1; }
+}
+@media (max-width: 520px) { .side { grid-template-columns: 110px minmax(0, 1fr); column-gap: 16px; } h1 { font-size: 1.5rem; } }
 
-nav { position: relative; display: flex; flex-wrap: wrap; gap: 4px 24px; margin: 28px 0 0; padding: 12px 0; border-top: 1px solid var(--rule);
+nav { position: relative; display: flex; flex-wrap: wrap; gap: 4px 24px; margin: 0; padding: 12px 0; border-top: 1px solid var(--rule);
   font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
 nav::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--grad); }
 nav a { color: var(--muted); }
@@ -105,29 +128,41 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 </style>
 </head>
 <body>
-<div class="hero" aria-hidden="true">
-  <canvas id="manifold"></canvas>
+<div class="hero">
+  <canvas id="manifold" aria-hidden="true"></canvas>
+  <button class="wave" id="wave" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="url(#wg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <defs><linearGradient id="wg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fa4616"/><stop offset=".5" stop-color="#ff2e7e"/><stop offset="1" stop-color="#2f80ff"/></linearGradient></defs>
+      <path d="M7 11.5V6.5a1.5 1.5 0 0 1 3 0v4M10 10V4.5a1.5 1.5 0 0 1 3 0V10M13 10V5.5a1.5 1.5 0 0 1 3 0V11M16 11V8.5a1.5 1.5 0 0 1 3 0v5.5a7 7 0 0 1-7 7h-.5a6.5 6.5 0 0 1-5.4-2.9L3.5 14.6a1.6 1.6 0 0 1 2.5-2L7 13.7"/>
+    </svg>
+    Wave hello
+  </button>
 </div>
-<main>
-
-<div class="hdr">
+<div class="shell">
+<aside class="side">
   <img class="photo" src="images/profile_picture.jpeg" alt="Aditya Dutt">
-  <div>
+  <div class="who">
     <h1>Aditya Dutt, Ph.D.</h1>
-    <p class="role">Postdoctoral Associate, Electrical &amp; Computer Engineering, University of Florida<br>
-      <a href="https://faculty.eng.ufl.edu/machine-learning/">GatorSense · Machine Learning and Sensing Lab</a></p>
-    <div class="links">
-      <a href="CV_AdityaDutt.pdf">CV</a>
-      <a href="mailto:aditya.dutt@ufl.edu">Email</a>
-      <a href="https://scholar.google.com/citations?user=0uWY-3IAAAAJ&amp;hl=en">Google Scholar</a>
-      <!-- TODO: put your ResearchGate profile URL in href, then delete the comment markers around the next line -->
-      <!-- <a href="RESEARCHGATE_PROFILE_URL">ResearchGate</a> -->
-      <a href="https://github.com/AdityaDutt">GitHub</a>
-      <a href="https://www.linkedin.com/in/adityadutt12/">LinkedIn</a>
-      <a href="https://adityadutt.medium.com/">Blog</a>
-    </div>
+    <p class="handle">Postdoctoral Associate</p>
   </div>
-</div>
+  <a class="cvbtn" href="CV_AdityaDutt.pdf">Download CV</a>
+  <ul class="meta">
+    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 14.5h12M3.5 14.5V3l6-1.5v13M9.5 6h3v8.5M5.5 5h2M5.5 8h2M5.5 11h2"/></svg><span>Electrical &amp; Computer Engineering, University of Florida</span></li>
+    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 1.5h4M6.8 1.5v4.2L2.6 12.6a1.3 1.3 0 0 0 1.1 1.9h8.6a1.3 1.3 0 0 0 1.1-1.9L9.2 5.7V1.5"/></svg><a href="https://faculty.eng.ufl.edu/machine-learning/">GatorSense · Machine Learning and Sensing Lab</a></li>
+    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 14.5s4.5-4.2 4.5-7.8a4.5 4.5 0 0 0-9 0c0 3.6 4.5 7.8 4.5 7.8z"/><circle cx="8" cy="6.6" r="1.6"/></svg><span>Gainesville, Florida</span></li>
+    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1.5" y="3.5" width="13" height="9" rx="1.5"/><path d="M2 4.5l6 4.5 6-4.5"/></svg><a href="mailto:aditya.dutt@ufl.edu">aditya.dutt@ufl.edu</a></li>
+  </ul>
+  <ul class="links">
+    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 0 1 4 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 0 1-4-4L5 7.5"/></svg><a href="https://scholar.google.com/citations?user=0uWY-3IAAAAJ&amp;hl=en">Google Scholar</a></li>
+    <!-- TODO: put your ResearchGate profile URL in href, then delete the comment markers around the next line -->
+    <!-- <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 0 1 4 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 0 1-4-4L5 7.5"/></svg><a href="RESEARCHGATE_PROFILE_URL">ResearchGate</a></li> -->
+    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 0 1 4 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 0 1-4-4L5 7.5"/></svg><a href="https://github.com/AdityaDutt">GitHub</a></li>
+    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 0 1 4 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 0 1-4-4L5 7.5"/></svg><a href="https://www.linkedin.com/in/adityadutt12/">LinkedIn</a></li>
+    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 0 1 4 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 0 1-4-4L5 7.5"/></svg><a href="https://adityadutt.medium.com/">Blog (Medium)</a></li>
+  </ul>
+  <p class="notice"><b>On the job market:</b> tenure-track faculty positions, 2026–27.</p>
+</aside>
+<main>
 
 <nav aria-label="Sections">
   <a href="#research">Research</a><a href="#dissertation">Dissertation</a><a href="#publications">Publications</a><a href="#presentations">Presentations</a><a href="#experience">Experience</a><a href="#teaching">Teaching</a>
@@ -136,7 +171,6 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 <div class="bio">
   <p>I develop machine learning for scientific data where sensors are heterogeneous and labels are scarce: aligning modalities in shared latent spaces, generating realistic synthetic data to train downstream models, and structuring embeddings so they transfer across domains. Applications include remote sensing, plant root phenotyping from X-ray CT, crop phenotyping from drone imagery, computational pathology, and socioeconomic mapping.</p>
   <p>I am a Postdoctoral Associate in the <a href="https://faculty.eng.ufl.edu/machine-learning/">Machine Learning and Sensing Lab (GatorSense)</a> at the University of Florida, working with <a href="https://www.ece.ufl.edu/people/faculty/alina-zare">Dr. Alina Zare</a>. I received my Ph.D. in Computer and Information Science and Engineering from UF in 2025.</p>
-  <p class="notice"><b>On the job market:</b> tenure-track faculty positions, 2026–27.</p>
 </div>
 
 <h2 id="research">Research</h2>
@@ -211,6 +245,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 
 <footer>Last updated October 2026</footer>
 </main>
+</div>
 
 <script>
 /* Header: an interactive embedding. Points link to near neighbours and alternate between
@@ -230,7 +265,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   const mouse = { x: -1e4, y: -1e4, on: false };
 
   function build() {
-    const n = Math.round(Math.min(300, Math.max(140, W / 5.5)));
+    const n = Math.round(Math.min(300, Math.max(190, W / 5.5)));
     pts = [];
     for (let i = 0; i < n; i++) {
       const t = Math.random(), s = i % 3, ang = rnd(0, 6.283), r = Math.sqrt(Math.random());
@@ -296,9 +331,10 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       return [W / 2 + x2 * S, H / 2 + y3 * S, 1 - 0.3 * z3];
     }
     if (mode === "hand") {   // open palm waving about the wrist
-      const sc = H * 0.88 / 200, a = 0.38 * Math.sin(ms / 230);
+      const sc = H * 0.94 / 200, a = 0.38 * Math.sin(ms / 230);
       const dx = (p.hand[0] - 100) * sc, dy = (p.hand[1] - 196) * sc;
-      return [W / 2 + dx * Math.cos(a) - dy * Math.sin(a), H * 0.97 + dx * Math.sin(a) + dy * Math.cos(a)];
+      const hx = W < 600 ? W * 0.36 : W / 2;   // keep clear of the button on phones
+      return [hx + dx * Math.cos(a) - dy * Math.sin(a), H * 0.97 + dx * Math.sin(a) + dy * Math.cos(a)];
     }
     // color ribbon
     return [ (0.04 + 0.92 * p.t) * W,
@@ -366,7 +402,12 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
   function setMouse(e) { const r = cv.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.on = true; }
   cv.addEventListener("pointermove", setMouse);
-  cv.addEventListener("pointerdown", e => { setMouse(e); if (!reduce) handUntil = now + 4200; });
+  cv.addEventListener("pointerdown", setMouse);
+  document.getElementById("wave").addEventListener("click", () => {
+    if (!reduce) { handUntil = now + 4500; mouse.on = false; return; }
+    pts.forEach(p => { [p.x, p.y] = tgt(p, "hand", 0); }); render();          // reduced motion: show a still hand, then return
+    setTimeout(() => { pts.forEach(p => { [p.x, p.y] = tgt(p, "color", 0); }); render(); }, 3000);
+  });
   cv.addEventListener("pointerleave", () => { mouse.on = false; });
   window.addEventListener("resize", resize);
   resize();
