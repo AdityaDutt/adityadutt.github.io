@@ -5,69 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aditya Dutt</title>
 <meta name="description" content="Aditya Dutt, Postdoctoral Associate, ECE, University of Florida. Multimodal learning, generative modeling for scientific data, structured latent spaces.">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
 <style>
-/* Layout: single column, research-theme blocks with one published figure each, dated paper list */
+/* Layout: full-bleed interactive embedding header, then a wide content column; paragraphs capped for readability */
 :root {
-  --bg: #ffffff; --fg: #1b1f24; --muted: #5d6670; --rule: #dde1e5;
-  --fig: #eef2f5; --fig-line: #c9d3dc; --chip: #f1f4f6;
-  --accent: #1f5f8b; --c1: #1f77b4; --c2: #d9822b; --c3: #2e9e6a;
-  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
-  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --serif: "IBM Plex Serif", Georgia, serif;
+  --bg: #ffffff; --fg: #111418; --muted: #5b616b; --rule: #e3e6ea;
+  --fig: #f2f4f7; --fig-line: #d3d9e0; --chip: #f3f5f8;
+  --accent: #0021a5;            /* UF blue: links, headings */
+  --hot: #fa4616;               /* UF orange: small marks only */
+  --grad: linear-gradient(90deg, #fa4616, #ff2e7e 35%, #8a3ffc 65%, #2f80ff);
+  --font: "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #15181b; --fg: #e6e9ec; --muted: #9aa3ad; --rule: #2c3137;
-  --fig: #20252b; --fig-line: #38404a; --chip: #1e2227;
-  --accent: #7fb6dd; --c1: #6fb0e6; --c2: #f0a45a; --c3: #5cc996; color-scheme: dark } }
+  --bg: #0f1115; --fg: #eceef2; --muted: #9ba2ad; --rule: #262a31;
+  --fig: #1a1d23; --fig-line: #333943; --chip: #1a1d23;
+  --accent: #7ea2ff; --hot: #ff7a4d; color-scheme: dark } }
 :root[data-theme="dark"] {
-  --bg: #15181b; --fg: #e6e9ec; --muted: #9aa3ad; --rule: #2c3137;
-  --fig: #20252b; --fig-line: #38404a; --chip: #1e2227;
-  --accent: #7fb6dd; --c1: #6fb0e6; --c2: #f0a45a; --c3: #5cc996; color-scheme: dark }
+  --bg: #0f1115; --fg: #eceef2; --muted: #9ba2ad; --rule: #262a31;
+  --fig: #1a1d23; --fig-line: #333943; --chip: #1a1d23;
+  --accent: #7ea2ff; --hot: #ff7a4d; color-scheme: dark }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-body { margin: 0; background: var(--bg); color: var(--fg); font: 15.5px/1.6 var(--sans);
-  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-main { max-width: 860px; margin: 0 auto; padding-block: 36px 56px; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; }
+main { max-width: 1120px; margin: 0 auto; padding-block: 8px 64px;
+  padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+@media (max-width: 600px) { main { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } }
 a { color: var(--accent); text-decoration: none; }
 a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
-h1, h2, h3 { font-family: var(--serif); font-weight: 600; text-wrap: balance; }
+h1, h2, h3 { font-weight: 600; text-wrap: balance; letter-spacing: -0.01em; }
 
-.hero { position: relative; margin-bottom: 20px; }
-.hero canvas { display: block; width: 100%; height: 190px; }
+.hero { position: relative; width: 100%; }
+.hero canvas { display: block; width: 100%; height: 280px; cursor: crosshair; touch-action: pan-y; }
+@media (max-width: 600px) { .hero canvas { height: 200px; } }
 
-.hdr { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
-.photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; flex: none; background: var(--fig); }
+.hdr { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
+.photo { width: 132px; height: 132px; border-radius: 50%; object-fit: cover; flex: none; background: var(--fig); }
 .hdr > div { flex: 1 1 320px; min-width: 0; }
-h1 { font-size: 1.95rem; margin: 0 0 2px; line-height: 1.2; }
-.role { color: var(--muted); margin: 0 0 10px; }
-.links { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 500 0.86rem/1.6 var(--mono); }
+h1 { font-size: 2.3rem; margin: 0 0 2px; line-height: 1.15; font-weight: 700; }
+.role { color: var(--muted); margin: 0 0 12px; font-size: 1.05rem; }
+.links { display: flex; flex-wrap: wrap; gap: 6px 18px; font-weight: 600; font-size: 0.95rem; }
 
-nav { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 24px 0 0; padding: 10px 0; border-block: 1px solid var(--rule); font: 500 0.78rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
+nav { position: relative; display: flex; flex-wrap: wrap; gap: 4px 24px; margin: 28px 0 0; padding: 12px 0; border-top: 1px solid var(--rule);
+  font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+nav::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--grad); }
 nav a { color: var(--muted); }
 nav a:hover { color: var(--accent); }
 
-.bio { margin: 22px 0 0; }
-.bio p { margin: 0 0 12px; max-width: 68ch; }
-.notice { display: inline-block; margin-top: 4px; padding: 6px 12px; border-radius: 6px; background: var(--chip); font-size: 0.95rem; }
-.notice b { color: var(--accent); }
+.bio { margin: 26px 0 0; }
+.bio p { margin: 0 0 12px; max-width: 72ch; }
+.notice { display: inline-flex; gap: 8px; align-items: center; margin-top: 4px; padding: 8px 14px; border-radius: 8px; background: var(--chip); font-size: 0.97rem; }
+.notice::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--hot); flex: none; }
+.notice b { color: var(--fg); }
 
-h2 { font-size: 1.25rem; margin: 44px 0 16px; scroll-margin-top: 16px; }
-h2::before { content: ""; display: inline-block; width: 10px; height: 10px; background: var(--accent); border-radius: 2px; margin-right: 10px; vertical-align: 1px; }
-h3 { font-size: 1.05rem; margin: 0 0 6px; color: var(--accent); }
+h2 { font-size: 1.45rem; margin: 52px 0 18px; scroll-margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+h2::before { content: ""; width: 22px; height: 4px; border-radius: 2px; background: var(--grad); flex: none; }
+h3 { font-size: 1.12rem; margin: 0 0 6px; color: var(--accent); }
 
-.themes { display: grid; gap: 32px; }
-.theme { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: center; }
+.themes { display: grid; gap: 36px; }
+.theme { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 32px; align-items: center; }
 .theme:nth-child(even) .fig { order: 2; }
-.theme.wide { grid-template-columns: 1fr; gap: 14px; }
+.theme.wide { grid-template-columns: 1fr; gap: 16px; }
 .theme.wide .fig { order: 0; }
-.theme p { margin: 0 0 8px; }
-.papers { font: 400 0.8rem/1.5 var(--mono); color: var(--muted); }
-.fig { position: relative; max-width: 100%; border-radius: 8px; border: 1px solid var(--fig-line); overflow: hidden;
+.theme p { margin: 0 0 8px; max-width: 72ch; }
+.papers { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.fig { position: relative; max-width: 100%; border-radius: 10px; border: 1px solid var(--fig-line); overflow: hidden;
   background: var(--fig) repeating-linear-gradient(135deg, transparent 0 9px, var(--fig-line) 9px 10px); min-height: 120px;
-  display: grid; place-items: center; text-align: center; font: 500 0.68rem/1.35 var(--mono); color: var(--muted); }
+  display: grid; place-items: center; text-align: center; font-size: 0.75rem; color: var(--muted); }
 .fig > span { background: var(--fig); padding: 3px 6px; border-radius: 3px; margin: 8px; }
 .fig:has(img) > span { display: none; }
 .fig img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 8px; }
@@ -75,39 +79,38 @@ h3 { font-size: 1.05rem; margin: 0 0 6px; color: var(--accent); }
 .fig.natural img { position: static; height: auto; display: block; }
 .theme:not(.wide) .fig { aspect-ratio: 16 / 9; }
 
-ol.pubs { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
-ol.pubs li { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; }
-.yr { font: 500 0.8rem/1.6 var(--mono); color: var(--accent); }
+ol.pubs { margin: 0; padding: 0; list-style: none; display: grid; gap: 16px; }
+ol.pubs li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px; max-width: 900px; }
+.yr { font-size: 0.85rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1.85; }
 .t { font-weight: 600; } .v { font-style: italic; }
-.tag { font: 500 0.7rem/1 var(--mono); padding: 2px 6px; border-radius: 4px; background: var(--chip); color: var(--muted); }
+.tag { font-size: 0.72rem; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--chip); color: var(--muted); }
 
-.list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
-.list li { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; }
-.exp { display: grid; gap: 14px; }
+.list { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.list li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px; max-width: 900px; }
+.exp { display: grid; gap: 16px; max-width: 900px; }
 .row { display: flex; justify-content: space-between; gap: 4px 16px; flex-wrap: wrap; }
 .row > div:first-child { flex: 1 1 300px; min-width: 0; }
-.when { color: var(--muted); font: 400 0.82rem/1.7 var(--mono); white-space: nowrap; }
-.sub { color: var(--muted); font-size: 0.92rem; margin: 2px 0 0; }
-footer { margin-top: 48px; font: 400 0.78rem/1.4 var(--mono); color: var(--muted); }
+.when { color: var(--muted); font-size: 0.88rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sub { color: var(--muted); font-size: 0.95rem; margin: 2px 0 0; }
+footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 
 @media (prefers-reduced-motion: no-preference) {
   .fig { transition: transform .25s ease, box-shadow .25s ease; }
-  .theme:hover .fig { transform: translateY(-3px) scale(1.012); box-shadow: 0 10px 24px -12px rgba(0,0,0,.35); }
+  .theme:hover .fig { transform: translateY(-3px) scale(1.01); box-shadow: 0 14px 30px -16px rgba(0,0,0,.35); }
   main a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .2s ease; }
   main a:hover { background-size: 100% 1px; }
   ol.pubs li { transition: transform .2s ease; }
   ol.pubs li:hover { transform: translateX(4px); }
 }
 @media (prefers-reduced-motion: reduce) { main a:hover { text-decoration: underline; } }
-@media (max-width: 680px) { .theme { grid-template-columns: 1fr; } .theme:nth-child(even) .fig { order: 0; } h1 { font-size: 1.7rem; } }
+@media (max-width: 720px) { .theme { grid-template-columns: 1fr; } .theme:nth-child(even) .fig { order: 0; } h1 { font-size: 1.85rem; } }
 </style>
 </head>
 <body>
-<main>
-
 <div class="hero" aria-hidden="true">
   <canvas id="manifold"></canvas>
 </div>
+<main>
 
 <div class="hdr">
   <img class="photo" src="images/profile_picture.jpeg" alt="Aditya Dutt">
@@ -198,71 +201,108 @@ footer { margin-top: 48px; font: 400 0.78rem/1.4 var(--mono); color: var(--muted
 </main>
 
 <script>
-/* Header: the same points regroup two ways. By shape: three clusters of mixed colors.
-   By color: a flowing ribbon sorted along the UF-orange-to-blue gradient. */
+/* Header: an interactive point cloud. Points drift through a flow field, link to near
+   neighbours, and periodically regroup by shape (three clusters) or by color (a ribbon
+   sorted along the UF orange-to-blue gradient). The pointer pushes points away. */
 (function () {
   const cv = document.getElementById("manifold"), ctx = cv.getContext("2d");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const STOPS = [[250, 70, 22], [255, 46, 126], [138, 63, 252], [47, 128, 255]]; // UF orange, pink, violet, blue
-  function grad(t) {
+  const STOPS = [[250, 70, 22], [255, 46, 126], [138, 63, 252], [47, 128, 255]];
+  function rgb(t) {
     const x = t * (STOPS.length - 1), i = Math.min(Math.floor(x), STOPS.length - 2), f = x - i;
-    const a = STOPS[i], b = STOPS[i + 1];
-    return `rgb(${a.map((v, k) => Math.round(v + (b[k] - v) * f)).join(",")})`;
+    return STOPS[i].map((v, k) => Math.round(v + (STOPS[i + 1][k] - v) * f));
   }
   const rnd = (a, b) => a + Math.random() * (b - a);
-  const N = 210, pts = [];
-  for (let i = 0; i < N; i++) {
-    const t = Math.random(), s = i % 3, ang = rnd(0, Math.PI * 2), r = Math.sqrt(Math.random());
-    pts.push({ t, s, col: grad(t), ph: rnd(0, 6.28), sz: rnd(2.2, 3.6),
-      scatter: [rnd(0.03, 0.97), rnd(0.08, 0.92)],
-      shape: [0.2 + s * 0.3 + Math.cos(ang) * r * 0.1, 0.5 + Math.sin(ang) * r * 0.36],
-      jit: rnd(-1, 1) });
-  }
-  // keyframe order: scatter -> shape -> color -> scatter ...
-  const ORDER = ["scatter", "shape", "color"], MOVE = 2300, HOLD = 2600, SEG = MOVE + HOLD;
-  function target(p, mode, ms) {
-    if (mode === "color") {
-      const x = 0.05 + 0.9 * p.t;
-      return [x, 0.5 + 0.2 * Math.sin(p.t * 9.4 + ms / 1400) + p.jit * 0.07];
+  let W = 0, H = 0, pts = [];
+  const mouse = { x: -1e4, y: -1e4, on: false };
+
+  function build() {
+    const n = Math.round(Math.min(300, Math.max(140, W / 5.5)));
+    pts = [];
+    for (let i = 0; i < n; i++) {
+      const t = Math.random(), s = i % 3, ang = rnd(0, 6.283), r = Math.sqrt(Math.random());
+      const c = rgb(t);
+      pts.push({ t, s, c: `rgb(${c})`, cl: c.join(","), sz: rnd(1.8, 3),
+        ph: rnd(0, 6.283), jit: rnd(-1, 1), hx: rnd(0.02, 0.98), hy: rnd(0.08, 0.92),
+        ang, r, x: rnd(0, W), y: rnd(0, H), vx: 0, vy: 0 });
     }
-    return p[mode];
   }
-  const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  let W = 0, H = 0;
+  // targets in pixels
+  function tgt(p, mode, ms) {
+    if (mode === "flow") {
+      return [ (p.hx + 0.035 * Math.sin(ms / 2600 + p.hy * 9 + p.ph)) * W,
+               (p.hy + 0.06 * Math.cos(ms / 3100 + p.hx * 7)) * H ];
+    }
+    if (mode === "shape") {
+      const cx = [0.22, 0.5, 0.78][p.s], spin = ms / 6000 * (p.s === 1 ? -1 : 1);
+      const R = Math.min(W * 0.11, H * 0.4);
+      return [ cx * W + Math.cos(p.ang + spin) * p.r * R, H * 0.5 + Math.sin(p.ang + spin) * p.r * R ];
+    }
+    // color ribbon
+    return [ (0.04 + 0.92 * p.t) * W,
+             H * (0.5 + 0.22 * Math.sin(p.t * 8.5 + ms / 1500)) + p.jit * H * 0.07 ];
+  }
+  const ORDER = ["flow", "shape", "flow", "color"], DUR = 5200;
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
     const d = Math.min(window.devicePixelRatio || 1, 2);
+    const first = !W;
     W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0);
-    if (reduce) draw(0);
+    if (first || pts.length === 0) build();
+    if (reduce) { pts.forEach(p => { [p.x, p.y] = tgt(p, "color", 0); }); render(); }
   }
-  function mark(p, x, y, sz) {
+  function mark(p) {
+    const { x, y, sz } = p;
     ctx.beginPath();
-    if (p.s === 0) ctx.arc(x, y, sz, 0, Math.PI * 2);
-    else if (p.s === 1) ctx.rect(x - sz, y - sz, sz * 2, sz * 2);
-    else { ctx.moveTo(x, y - sz * 1.25); ctx.lineTo(x + sz * 1.15, y + sz * 0.85); ctx.lineTo(x - sz * 1.15, y + sz * 0.85); ctx.closePath(); }
+    if (p.s === 0) ctx.arc(x, y, sz, 0, 6.283);
+    else if (p.s === 1) ctx.rect(x - sz * 0.9, y - sz * 0.9, sz * 1.8, sz * 1.8);
+    else { ctx.moveTo(x, y - sz * 1.2); ctx.lineTo(x + sz * 1.1, y + sz * 0.8); ctx.lineTo(x - sz * 1.1, y + sz * 0.8); ctx.closePath(); }
     ctx.fill();
   }
-  function draw(ms) {
-    let from = "color", to = "color", k = 1;
-    if (!reduce) {
-      const seg = Math.floor(ms / SEG), local = ms % SEG;
-      from = ORDER[seg % 3]; to = ORDER[(seg + 1) % 3]; k = local < MOVE ? ease(local / MOVE) : 1;
-      if (k === 1) from = to;
-    }
+  function render() {
     ctx.clearRect(0, 0, W, H);
-    for (const p of pts) {
-      const a = target(p, from, ms), b = target(p, to, ms);
-      const wob = reduce ? 0 : 2.2 * Math.sin(ms / 800 + p.ph);
-      const x = (a[0] + (b[0] - a[0]) * k) * W + wob, y = (a[1] + (b[1] - a[1]) * k) * H + wob * 0.7;
-      ctx.fillStyle = p.col;
-      ctx.globalAlpha = 0.12; mark(p, x, y, p.sz * 2.2);   // soft halo
-      ctx.globalAlpha = 0.9; mark(p, x, y, p.sz);
+    const L = Math.max(46, Math.min(74, W / 22)), L2 = L * L;
+    ctx.lineWidth = 0.7;
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[i];
+      for (let j = i + 1; j < pts.length; j++) {
+        const b = pts[j], dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
+        if (d2 < L2) {
+          ctx.strokeStyle = `rgba(${a.cl},${(1 - Math.sqrt(d2) / L) * 0.38})`;
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        }
+      }
     }
-    ctx.globalAlpha = 1;
+    if (mouse.on) {
+      const R = 150;
+      for (const p of pts) {
+        const dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy);
+        if (d < R) { ctx.strokeStyle = `rgba(${p.cl},${(1 - d / R) * 0.55})`; ctx.beginPath(); ctx.moveTo(mouse.x, mouse.y); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+      }
+    }
+    for (const p of pts) { ctx.fillStyle = p.c; mark(p); }
   }
-  function loop(ms) { draw(ms); requestAnimationFrame(loop); }
-  resize(); window.addEventListener("resize", resize);
-  if (!reduce) requestAnimationFrame(loop);
+  function step(ms) {
+    const seg = Math.floor(ms / DUR), mode = ORDER[seg % ORDER.length];
+    for (const p of pts) {
+      const [tx, ty] = tgt(p, mode, ms);
+      p.vx += (tx - p.x) * 0.0065; p.vy += (ty - p.y) * 0.0065;
+      if (mouse.on) {
+        const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
+        if (d2 < 120 * 120 && d2 > 1) { const f = 900 / d2; p.vx += dx * f * 0.02; p.vy += dy * f * 0.02; }
+      }
+      p.vx *= 0.9; p.vy *= 0.9; p.x += p.vx; p.y += p.vy;
+    }
+    render();
+    requestAnimationFrame(step);
+  }
+  function setMouse(e) { const r = cv.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.on = true; }
+  cv.addEventListener("pointermove", setMouse);
+  cv.addEventListener("pointerdown", setMouse);
+  cv.addEventListener("pointerleave", () => { mouse.on = false; });
+  window.addEventListener("resize", resize);
+  resize();
+  if (!reduce) requestAnimationFrame(step);
 })();
 </script>
 </body>
