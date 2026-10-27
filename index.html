@@ -296,7 +296,8 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     const n = pts.length; let g = 5, picks = [];
     for (let it = 0; it < 16; it++) {                     // one line pixel per grid cell: even coverage
       const seen = new Map();
-      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (lum(x, y) < 48) {
+      for (let y = 2; y < h - 2; y++) for (let x = 2; x < w - 2; x++) if (lum(x, y) < 40 &&
+          (lum(x - 2, y) > 90 || lum(x + 2, y) > 90 || lum(x, y - 2) > 90 || lum(x, y + 2) > 90)) {
         const k = Math.floor(x / g) + "," + Math.floor(y / g); if (!seen.has(k)) seen.set(k, [x, y]); }
       picks = [...seen.values()];
       if (picks.length > n * 1.1) g *= 1.08; else if (picks.length < n * 0.95) g /= 1.08; else break;
@@ -308,7 +309,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
         const xx = x + dx * r, yy = y + dy * r;
         if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
         const L = lum(xx, yy);
-        if (L > 50 && L < 240) { const i = (yy * w + xx) * 4; return `${d[i]},${d[i + 1]},${d[i + 2]}`; }
+        if (L > 50 && L < 215) { const i = (yy * w + xx) * 4; return [d[i], d[i + 1], d[i + 2]].map(v => Math.round(v * 0.8)).join(","); }
       }
       return "70,70,76";
     };
@@ -370,7 +371,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   const blend = (p) => { if (avMix < 0.01 || !p.avc) return p.cl;
     const a = p.cl.split(",").map(Number), b = p.avc.split(",").map(Number);
     return a.map((v, k) => Math.round(v + (b[k] - v) * avMix)).join(","); };
-  const LINK = { avatar: 11, beads: 40, ring: 44, sheet: 44, swiss: 40, torus: 50, color: 44 }, PULL = { avatar: 0.03 };
+  const LINK = { avatar: 0.1, beads: 40, ring: 44, sheet: 44, swiss: 40, torus: 50, color: 44 }, PULL = { avatar: 0.03 };
 
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
@@ -380,7 +381,8 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     if (reduce) { pts.forEach(p => { [p.x, p.y] = tgt(p, "sheet", 0); }); render(); }
   }
   function mark(p) {
-    const { x, y } = p, sz = p.sz * p.k;
+    const { x, y } = p, sz = p.sz * p.k * (1 - 0.45 * avMix);
+    if (avMix > 0.5) { ctx.beginPath(); ctx.arc(x, y, Math.max(2, sz * 0.95), 0, 6.283); ctx.fill(); return; }   // clean dots for the avatar
     ctx.beginPath();
     if (p.s === 0) ctx.arc(x, y, sz, 0, 6.283);
     else if (p.s === 1) ctx.rect(x - sz * 0.9, y - sz * 0.9, sz * 1.8, sz * 1.8);
