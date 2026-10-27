@@ -66,6 +66,9 @@ h3 { font-size: 1.12rem; margin: 0 0 6px; color: var(--accent); }
 .theme { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 36px; align-items: center; }
 .theme p { margin: 0 0 8px; max-width: 72ch; }
 .papers { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.diss { max-width: 900px; }
+.diss p { margin: 0 0 10px; max-width: 72ch; }
+.diss .sub { margin-bottom: 10px; }
 .fig { position: relative; max-width: 100%; border-radius: 10px; border: 1px solid var(--fig-line); overflow: hidden;
   background: var(--fig) repeating-linear-gradient(135deg, transparent 0 9px, var(--fig-line) 9px 10px); min-height: 120px;
   display: grid; place-items: center; text-align: center; font-size: 0.75rem; color: var(--muted); }
@@ -111,11 +114,14 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   <img class="photo" src="images/profile_picture.jpeg" alt="Aditya Dutt">
   <div>
     <h1>Aditya Dutt, Ph.D.</h1>
-    <p class="role">Postdoctoral Associate, Electrical &amp; Computer Engineering, University of Florida</p>
+    <p class="role">Postdoctoral Associate, Electrical &amp; Computer Engineering, University of Florida<br>
+      <a href="https://faculty.eng.ufl.edu/machine-learning/">GatorSense · Machine Learning and Sensing Lab</a></p>
     <div class="links">
       <a href="CV_AdityaDutt.pdf">CV</a>
       <a href="mailto:aditya.dutt@ufl.edu">Email</a>
-      <a href="https://scholar.google.com/citations?user=0uWY-3IAAAAJ&amp;hl=en">Scholar</a>
+      <a href="https://scholar.google.com/citations?user=0uWY-3IAAAAJ&amp;hl=en">Google Scholar</a>
+      <!-- TODO: put your ResearchGate profile URL in href, then delete the comment markers around the next line -->
+      <!-- <a href="RESEARCHGATE_PROFILE_URL">ResearchGate</a> -->
       <a href="https://github.com/AdityaDutt">GitHub</a>
       <a href="https://www.linkedin.com/in/adityadutt12/">LinkedIn</a>
       <a href="https://adityadutt.medium.com/">Blog</a>
@@ -124,12 +130,12 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 </div>
 
 <nav aria-label="Sections">
-  <a href="#research">Research</a><a href="#publications">Publications</a><a href="#presentations">Presentations</a><a href="#experience">Experience</a><a href="#teaching">Teaching</a>
+  <a href="#research">Research</a><a href="#dissertation">Dissertation</a><a href="#publications">Publications</a><a href="#presentations">Presentations</a><a href="#experience">Experience</a><a href="#teaching">Teaching</a>
 </nav>
 
 <div class="bio">
   <p>I develop machine learning for scientific data where sensors are heterogeneous and labels are scarce: aligning modalities in shared latent spaces, generating realistic synthetic data to train downstream models, and structuring embeddings so they transfer across domains. Applications include remote sensing, plant root phenotyping from X-ray CT, crop phenotyping from drone imagery, computational pathology, and socioeconomic mapping.</p>
-  <p>I am a Postdoctoral Associate in the Machine Learning and Sensing Lab at the University of Florida, working with <a href="https://faculty.eng.ufl.edu/machine-learning/">Dr. Alina Zare</a>. I received my Ph.D. in Computer and Information Science and Engineering from UF in 2025.</p>
+  <p>I am a Postdoctoral Associate in the <a href="https://faculty.eng.ufl.edu/machine-learning/">Machine Learning and Sensing Lab (GatorSense)</a> at the University of Florida, working with <a href="https://www.ece.ufl.edu/people/faculty/alina-zare">Dr. Alina Zare</a>. I received my Ph.D. in Computer and Information Science and Engineering from UF in 2025.</p>
   <p class="notice"><b>On the job market:</b> tenure-track faculty positions, 2026–27.</p>
 </div>
 
@@ -152,6 +158,17 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     <div><h3>Structured latent spaces under limited supervision</h3>
       <p>Contrastive and triplet objectives that shape embedding geometry, autoencoder representations for downscaling survey indicators across India, and weakly supervised graph networks trained on synthetic and incomplete labels.</p>
       <div class="papers">TASLP 2023 · arXiv 2026</div></div>
+  </div>
+</div>
+
+<h2 id="dissertation">Dissertation</h2>
+<div class="diss">
+  <h3>A Multimodal Alignment Network for Domain Translation and Fusion</h3>
+  <p class="sub">Ph.D., Computer and Information Science and Engineering, University of Florida, May 2025 · Advisor: Dr. Alina Zare</p>
+  <p>Introduces COMMANet, a contrastive multimodal alignment network that uses triplet networks to map heterogeneous sensors (hyperspectral, LiDAR, SAR, optical) into one shared latent space. A single model performs both classification and domain translation, and the shared space generates aligned multimodal synthetic data for low-resource settings.</p>
+  <div class="papers">
+    <!-- TODO: add the full-text link (UF Digital Collections or ProQuest) once available -->
+    <a href="https://faculty.eng.ufl.edu/machine-learning/2025/04/04/congratulations-to-dr-aditya-dutt-for-a-successful-dissertation-defense/">Defense announcement</a> · <a href="https://doi.org/10.1109/JSTARS.2022.3217485">Core paper (JSTARS 2022)</a>
   </div>
 </div>
 
@@ -196,9 +213,10 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 </main>
 
 <script>
-/* Header: an interactive point cloud. Points drift through a flow field, link to near
-   neighbours, and periodically regroup by shape (three clusters) or by color (a ribbon
-   sorted along the UF orange-to-blue gradient). The pointer pushes points away. */
+/* Header: an interactive embedding. Points link to near neighbours and alternate between
+   discrete clusters (by shape, by color band, by size) and continuous manifolds (a color
+   ribbon, a rotating swiss roll, a torus). They wave hello on load and on click; the
+   pointer pushes them away. */
 (function () {
   const cv = document.getElementById("manifold"), ctx = cv.getContext("2d");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -219,8 +237,22 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       const c = rgb(t);
       pts.push({ t, s, c: `rgb(${c})`, cl: c.join(","), sz: rnd(1.3, 3.8),
         ph: rnd(0, 6.283), jit: rnd(-1, 1), hx: rnd(0.02, 0.98), hy: rnd(0.08, 0.92),
-        ang, r, x: rnd(0, W), y: rnd(0, H), vx: 0, vy: 0 });
+        ang, r, x: rnd(0, W), y: rnd(0, H), vx: 0, vy: 0, k: 1 });
     }
+    // hand: sample points inside a simple open-palm silhouette (200x200 design grid)
+    const oc = document.createElement("canvas"); oc.width = oc.height = 200;
+    const o = oc.getContext("2d"); o.fillStyle = "#000"; o.strokeStyle = "#000"; o.lineCap = "round";
+    o.beginPath(); o.roundRect ? o.roundRect(60, 92, 82, 84, 20) : o.rect(60, 92, 82, 84); o.fill();
+    o.fillRect(78, 168, 46, 30);
+    [[73, 100, 66, 34, 21], [96, 98, 96, 20, 22], [119, 100, 125, 30, 21], [138, 110, 151, 56, 18], [64, 146, 28, 108, 21]]
+      .forEach(([x1, y1, x2, y2, w]) => { o.lineWidth = w; o.beginPath(); o.moveTo(x1, y1); o.lineTo(x2, y2); o.stroke(); });
+    const img = o.getImageData(0, 0, 200, 200).data, cells = [];
+    const inside = (x, y) => x >= 0 && y >= 0 && x < 200 && y < 200 && img[(y * 200 + x) * 4 + 3] > 128;
+    for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2)   // outline cells only: inside, next to outside
+      if (inside(x, y) && (!inside(x - 3, y) || !inside(x + 3, y) || !inside(x, y - 3) || !inside(x, y + 3))) cells.push([x, y]);
+    for (let i = cells.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cells[i], cells[j]] = [cells[j], cells[i]]; }
+    const pick = cells.slice(0, pts.length).sort((a, b) => a[1] - b[1]);
+    [...pts].sort((a, b) => a.t - b.t).forEach((p, i) => { p.hand = pick[i % pick.length]; });
     // rank points by size within each shape group, for the sunflower layout
     for (let g = 0; g < 3; g++) {
       const grp = pts.filter(p => p.s === g).sort((a, b) => b.sz - a.sz);
@@ -248,11 +280,33 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       const R = Math.min(W * 0.085, H * 0.38), spin = ms / 8000 * (bin % 2 ? 1 : -1);
       return [ cx * W + Math.cos(p.ang + spin) * p.r * R, H * 0.5 + Math.sin(p.ang + spin) * p.r * R ];
     }
+    if (mode === "swiss") {  // swiss roll: color runs along the roll, which spins about its own axis
+      const th = 1.5 * Math.PI * (1 + 2 * p.t), S = H * 0.4;
+      const cy = th * Math.cos(th) / 14.2, cz = th * Math.sin(th) / 14.2, A = ms / 3500;
+      const Y = cy * Math.cos(A) - cz * Math.sin(A), Z0 = cy * Math.sin(A) + cz * Math.cos(A);
+      const X0 = p.jit * (W * 0.24) / S, B = 1.42 + 0.14 * Math.sin(ms / 5000);
+      const X = X0 * Math.cos(B) + Z0 * Math.sin(B), Z = -X0 * Math.sin(B) + Z0 * Math.cos(B);
+      return [W / 2 + X * S, H / 2 + Y * S, 1 + 0.12 * Z];
+    }
+    if (mode === "torus") {  // torus: color runs around the ring
+      const u = p.t * 6.283, v = p.ang, R = 1, r = 0.3, S = Math.min(H * 0.46, W * 0.22);
+      const x = (R + r * Math.cos(v)) * Math.cos(u), y = r * Math.sin(v), z = (R + r * Math.cos(v)) * Math.sin(u);
+      const A = ms / 4000, x2 = x * Math.cos(A) - z * Math.sin(A), z2 = x * Math.sin(A) + z * Math.cos(A);
+      const T = 0.55, y3 = y * Math.cos(T) - z2 * Math.sin(T), z3 = y * Math.sin(T) + z2 * Math.cos(T);
+      return [W / 2 + x2 * S, H / 2 + y3 * S, 1 - 0.3 * z3];
+    }
+    if (mode === "hand") {   // open palm waving about the wrist
+      const sc = H * 0.88 / 200, a = 0.38 * Math.sin(ms / 230);
+      const dx = (p.hand[0] - 100) * sc, dy = (p.hand[1] - 196) * sc;
+      return [W / 2 + dx * Math.cos(a) - dy * Math.sin(a), H * 0.97 + dx * Math.sin(a) + dy * Math.cos(a)];
+    }
     // color ribbon
     return [ (0.04 + 0.92 * p.t) * W,
              H * (0.5 + 0.22 * Math.sin(p.t * 8.5 + ms / 1500)) + p.jit * H * 0.07 ];
   }
-  const ORDER = ["flow", "shape", "size", "hue", "color"], DUR = 5200;
+  const ORDER = ["flow", "shape", "swiss", "hue", "color", "size", "torus"], DUR = 5200;
+  let handUntil = 4800, now = 0, Lcur = 60;
+  const LINK = { hand: 16, swiss: 30, torus: 34 }, PULL = { hand: 0.03 };
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
     const d = Math.min(window.devicePixelRatio || 1, 2);
@@ -262,7 +316,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     if (reduce) { pts.forEach(p => { [p.x, p.y] = tgt(p, "color", 0); }); render(); }
   }
   function mark(p) {
-    const { x, y, sz } = p;
+    const { x, y } = p, sz = p.sz * p.k;
     ctx.beginPath();
     if (p.s === 0) ctx.arc(x, y, sz, 0, 6.283);
     else if (p.s === 1) ctx.rect(x - sz * 0.9, y - sz * 0.9, sz * 1.8, sz * 1.8);
@@ -271,7 +325,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
   function render() {
     ctx.clearRect(0, 0, W, H);
-    const L = Math.max(46, Math.min(74, W / 22)), L2 = L * L;
+    const L = Lcur, L2 = L * L;
     ctx.lineWidth = 0.7;
     for (let i = 0; i < pts.length; i++) {
       const a = pts[i];
@@ -293,10 +347,14 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     for (const p of pts) { ctx.fillStyle = p.c; mark(p); }
   }
   function step(ms) {
-    const seg = Math.floor(ms / DUR), mode = ORDER[seg % ORDER.length];
+    now = ms;
+    const seg = Math.floor(ms / DUR), mode = ms < handUntil ? "hand" : ORDER[seg % ORDER.length];
+    Lcur += ((LINK[mode] || Math.max(46, Math.min(74, W / 22))) - Lcur) * 0.06;
     for (const p of pts) {
-      const [tx, ty] = tgt(p, mode, ms);
-      p.vx += (tx - p.x) * 0.0065; p.vy += (ty - p.y) * 0.0065;
+      const [tx, ty, ks = 1] = tgt(p, mode, ms);
+      p.k += (ks - p.k) * 0.1;
+      const kp = PULL[mode] || 0.0065;
+      p.vx += (tx - p.x) * kp; p.vy += (ty - p.y) * kp;
       if (mouse.on) {
         const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
         if (d2 < 120 * 120 && d2 > 1) { const f = 900 / d2; p.vx += dx * f * 0.02; p.vy += dy * f * 0.02; }
@@ -308,7 +366,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
   function setMouse(e) { const r = cv.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.on = true; }
   cv.addEventListener("pointermove", setMouse);
-  cv.addEventListener("pointerdown", setMouse);
+  cv.addEventListener("pointerdown", e => { setMouse(e); if (!reduce) handUntil = now + 4200; });
   cv.addEventListener("pointerleave", () => { mouse.on = false; });
   window.addEventListener("resize", resize);
   resize();
