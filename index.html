@@ -50,24 +50,19 @@ h1, h2, h3 { font-weight: 600; text-wrap: balance; letter-spacing: -0.01em; }
 @media (prefers-reduced-motion: no-preference) { .wave { transition: box-shadow .2s, transform .2s; } .wave:active { transform: scale(.96); } }
 @media (max-width: 600px) { .wave { right: max(16px, env(safe-area-inset-right, 0px)); bottom: 10px; font-size: 0.85rem; } }
 
-.side { position: sticky; top: 20px; align-self: start; display: grid; gap: 16px; }
-.photo { width: 100%; max-width: 280px; aspect-ratio: 1; border-radius: 50%; object-fit: cover; background: var(--fig); border: 1px solid var(--rule); }
-h1 { font-size: 1.9rem; margin: 0; line-height: 1.15; font-weight: 700; }
-.handle { color: var(--muted); font-size: 1.15rem; margin: 2px 0 0; }
-.cvbtn { display: block; text-align: center; padding: 8px 12px; border: 1px solid var(--rule); border-radius: 8px; font-weight: 600; color: var(--fg); background: var(--chip); }
-.cvbtn:hover { border-color: var(--accent); color: var(--accent); }
-.meta, .links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 0.95rem; }
-.meta li, .links li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: start; overflow-wrap: anywhere; }
-.meta svg, .links svg { width: 16px; height: 16px; margin-top: 4px; color: var(--muted); }
-.links { padding-top: 14px; border-top: 1px solid var(--rule); font-weight: 600; }
+.side { align-self: start; display: grid; gap: 18px; }
+.photo { width: 100%; max-width: 260px; aspect-ratio: 1; border-radius: 50%; object-fit: cover; background: var(--fig); }
+h1 { font-size: 1.85rem; margin: 0 0 8px; line-height: 1.15; font-weight: 700; }
+.title { color: var(--muted); margin: 0 0 8px; line-height: 1.5; }
+.lab { margin: 0; font-weight: 600; font-size: 0.95rem; }
+.links { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-weight: 600; font-size: 0.95rem; padding-top: 16px; border-top: 1px solid var(--rule); }
 .side .notice { margin: 0; display: block; line-height: 1.5; }
 .side .notice::before { display: inline-block; margin-right: 8px; vertical-align: 1px; }
 @media (max-width: 960px) {
-  .side { position: static; grid-template-columns: 160px minmax(0, 1fr); align-items: center; column-gap: 24px; }
-  .side .photo { grid-row: span 2; }
+  .side { grid-template-columns: 150px minmax(0, 1fr); align-items: center; column-gap: 24px; }
   .side > :not(.photo):not(.who) { grid-column: 1 / -1; }
 }
-@media (max-width: 520px) { .side { grid-template-columns: 110px minmax(0, 1fr); column-gap: 16px; } h1 { font-size: 1.5rem; } }
+@media (max-width: 520px) { .side { grid-template-columns: 104px minmax(0, 1fr); column-gap: 16px; } h1 { font-size: 1.45rem; } .title { font-size: 0.92rem; } }
 
 nav { position: relative; display: flex; flex-wrap: wrap; gap: 4px 24px; margin: 0; padding: 12px 0; border-top: 1px solid var(--rule);
   font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
@@ -143,23 +138,19 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   <img class="photo" src="images/profile_picture.jpeg" alt="Aditya Dutt">
   <div class="who">
     <h1>Aditya Dutt, Ph.D.</h1>
-    <p class="handle">Postdoctoral Associate</p>
+    <p class="title">Postdoctoral Associate<br>Electrical &amp; Computer Engineering<br>University of Florida</p>
+    <p class="lab"><a href="https://faculty.eng.ufl.edu/machine-learning/">GatorSense · Machine Learning and Sensing Lab</a></p>
   </div>
-  <a class="cvbtn" href="CV_AdityaDutt.pdf">Download CV</a>
-  <ul class="meta">
-    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 14.5h12M3.5 14.5V3l6-1.5v13M9.5 6h3v8.5M5.5 5h2M5.5 8h2M5.5 11h2"/></svg><span>Electrical &amp; Computer Engineering, University of Florida</span></li>
-    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 1.5h4M6.8 1.5v4.2L2.6 12.6a1.3 1.3 0 0 0 1.1 1.9h8.6a1.3 1.3 0 0 0 1.1-1.9L9.2 5.7V1.5"/></svg><a href="https://faculty.eng.ufl.edu/machine-learning/">GatorSense · Machine Learning and Sensing Lab</a></li>
-    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 14.5s4.5-4.2 4.5-7.8a4.5 4.5 0 0 0-9 0c0 3.6 4.5 7.8 4.5 7.8z"/><circle cx="8" cy="6.6" r="1.6"/></svg><span>Gainesville, Florida</span></li>
-    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1.5" y="3.5" width="13" height="9" rx="1.5"/><path d="M2 4.5l6 4.5 6-4.5"/></svg><a href="mailto:aditya.dutt@ufl.edu">aditya.dutt@ufl.edu</a></li>
-  </ul>
-  <ul class="links">
-    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 0 1 4 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 0 1-4-4L5 7.5"/></svg><a href="https://scholar.google.com/citations?user=0uWY-3IAAAAJ&amp;hl=en">Google Scholar</a></li>
+  <p class="links">
+    <a href="CV_AdityaDutt.pdf">CV</a>
+    <a href="mailto:aditya.dutt@ufl.edu">Email</a>
+    <a href="https://scholar.google.com/citations?user=0uWY-3IAAAAJ&amp;hl=en">Google Scholar</a>
     <!-- TODO: put your ResearchGate profile URL in href, then delete the comment markers around the next line -->
-    <!-- <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 0 1 4 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 0 1-4-4L5 7.5"/></svg><a href="RESEARCHGATE_PROFILE_URL">ResearchGate</a></li> -->
-    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 0 1 4 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 0 1-4-4L5 7.5"/></svg><a href="https://github.com/AdityaDutt">GitHub</a></li>
-    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 0 1 4 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 0 1-4-4L5 7.5"/></svg><a href="https://www.linkedin.com/in/adityadutt12/">LinkedIn</a></li>
-    <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 0 1 4 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 0 1-4-4L5 7.5"/></svg><a href="https://adityadutt.medium.com/">Blog (Medium)</a></li>
-  </ul>
+    <!-- <a href="RESEARCHGATE_PROFILE_URL">ResearchGate</a> -->
+    <a href="https://github.com/AdityaDutt">GitHub</a>
+    <a href="https://www.linkedin.com/in/adityadutt12/">LinkedIn</a>
+    <a href="https://adityadutt.medium.com/">Blog</a>
+  </p>
   <p class="notice"><b>On the job market:</b> tenure-track faculty positions, 2026–27.</p>
 </aside>
 <main>
@@ -255,7 +246,12 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 (function () {
   const cv = document.getElementById("manifold"), ctx = cv.getContext("2d");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const STOPS = [[250, 70, 22], [255, 46, 126], [138, 63, 252], [47, 128, 255]];
+  // restrained palette: light grey -> charcoal -> UF orange (lighter greys on dark backgrounds)
+  const dark = () => document.documentElement.dataset.theme === "dark" ||
+    (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+  let STOPS = [];
+  const setStops = () => { STOPS = dark() ? [[96, 102, 112], [196, 200, 207], [255, 122, 77]] : [[184, 189, 197], [62, 67, 76], [250, 70, 22]]; };
+  setStops();
   function rgb(t) {
     const x = t * (STOPS.length - 1), i = Math.min(Math.floor(x), STOPS.length - 2), f = x - i;
     return STOPS[i].map((v, k) => Math.round(v + (STOPS[i + 1][k] - v) * f));
@@ -410,6 +406,9 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   });
   cv.addEventListener("pointerleave", () => { mouse.on = false; });
   window.addEventListener("resize", resize);
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    setStops(); pts.forEach(p => { const c = rgb(p.t); p.c = `rgb(${c})`; p.cl = c.join(","); });
+  });
   resize();
   if (!reduce) requestAnimationFrame(step);
 })();
