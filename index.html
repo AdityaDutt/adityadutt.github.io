@@ -240,7 +240,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 
 <script>
 /* Header: an interactive embedding. Points link to near neighbours and alternate between
-   meaningful clusters (by shape, each laid out as its own lattice; by color band) and
+   a structured latent space (class clusters strung along a curve or around a ring) and
    connected manifolds sampled on a regular grid (rippling sheet, swiss roll, color ribbon,
    torus, double helix). "Wave hello" gathers them into a waving hand. */
 (function () {
@@ -257,27 +257,9 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     return STOPS[i].map((v, k) => Math.round(v + (STOPS[i + 1][k] - v) * f));
   }
   const rnd = (a, b) => a + Math.random() * (b - a);
+  const gauss = () => Math.max(-2.2, Math.min(2.2, Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(6.283 * Math.random())));
   let W = 0, H = 0, pts = [];
   const mouse = { x: -1e4, y: -1e4, on: false };
-
-  // lattice layouts in unit coordinates (roughly within radius 1)
-  function squareLattice(n) {
-    const m = Math.ceil(Math.sqrt(n)), out = [];
-    for (let i = 0; i < n; i++) out.push([((i % m) / (m - 1) - 0.5) * 1.7, (Math.floor(i / m) / (m - 1) - 0.5) * 1.7]);
-    return out;
-  }
-  function ringLattice(n) {
-    const out = [[0, 0]]; let j = 1;
-    while (out.length < n) { const c = 6 * j; for (let k = 0; k < c && out.length < n; k++) out.push([j, (k / c) * 6.283 + j * 0.3]); j++; }
-    const J = j - 1 || 1;
-    return out.map((q, i) => i === 0 ? [0, 0] : [Math.cos(q[1]) * q[0] / J, Math.sin(q[1]) * q[0] / J]);
-  }
-  function triLattice(n) {
-    const raw = []; let j = 0;
-    while (raw.length < n) { for (let i = 0; i <= j && raw.length < n; i++) raw.push([i - j / 2, j * 0.866]); j++; }
-    const h = (j - 1) * 0.866 || 1;
-    return raw.map(([x, y]) => [x / h * 1.9, (y / h - 0.62) * 1.9]);
-  }
 
   function build() {
     const n = Math.round(Math.min(300, Math.max(190, W / 5.5)));
@@ -285,13 +267,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     for (let i = 0; i < n; i++) {
       const t = Math.random(), s = i % 3, c = rgb(t);
       pts.push({ t, s, c: `rgb(${c})`, cl: c.join(","), sz: rnd(1.6, 3.2),
-        ang: rnd(0, 6.283), r: Math.sqrt(Math.random()), x: rnd(0, W), y: rnd(0, H), vx: 0, vy: 0, k: 1 });
-    }
-    // per-shape lattices
-    const lays = [ringLattice, squareLattice, triLattice];
-    for (let g = 0; g < 3; g++) {
-      const grp = pts.filter(p => p.s === g).sort((a, b) => a.t - b.t), L = lays[g](grp.length);
-      grp.forEach((p, k) => { p.lay = L[k]; });
+        g1: gauss(), g2: gauss(), g3: gauss(), bridge: Math.random() < 0.26, x: rnd(0, W), y: rnd(0, H), vx: 0, vy: 0, k: 1 });
     }
     // manifold grid: rank by color so the gradient runs along u
     const C = Math.ceil(Math.sqrt(n * 3)), R = Math.ceil(n / C);
@@ -323,15 +299,19 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
 
   function tgt(p, mode, ms) {
-    if (mode === "shape") {   // three clusters: rings of circles, a grid of squares, a lattice of triangles
-      const cx = [0.22, 0.5, 0.78][p.s], R = Math.min(W * 0.1, H * 0.36), a = ms / 9000 * (p.s === 1 ? -1 : 1);
-      const [x, y] = p.lay;
-      return [cx * W + (x * Math.cos(a) - y * Math.sin(a)) * R, H / 2 + (x * Math.sin(a) + y * Math.cos(a)) * R];
+    if (mode === "beads") {  // structured latent space: class clusters strung along one smooth curve
+      const B = 5, c = Math.min(B - 1, Math.floor(p.t * B)), k = 5.2, ph = ms / 3000;
+      const sx = p.bridge ? 0.06 + 0.88 * p.t : 0.1 + c * 0.2;            // bridge points trace the curve itself
+      const cy = 0.5 + 0.22 * Math.sin(sx * k + ph), slope = (H * 0.22 * k * Math.cos(sx * k + ph)) / W;
+      const n = Math.hypot(1, slope), tx = 1 / n, ty = slope / n;          // tangent along the curve
+      const along = p.bridge ? 0 : p.g1 * W * 0.032, across = p.g2 * H * (p.bridge ? 0.015 : 0.06);
+      return [sx * W + tx * along - ty * across, cy * H + ty * along + tx * across];
     }
-    if (mode === "hue") {     // four clusters, one per band of the gradient
-      const bin = Math.min(3, Math.floor(p.t * 4)), cx = 0.14 + bin * 0.24;
-      const R = Math.min(W * 0.08, H * 0.36), spin = ms / 8000 * (bin % 2 ? 1 : -1);
-      return [cx * W + Math.cos(p.ang + spin) * p.r * R, H / 2 + Math.sin(p.ang + spin) * p.r * R];
+    if (mode === "ring") {   // class clusters arranged around a ring-shaped latent manifold
+      const B = 6, c = Math.min(B - 1, Math.floor(p.t * B)), u = (p.bridge ? p.t : (c + 0.5) / B) * 6.283 + ms / 7000;
+      const sp = p.bridge ? 0.025 : 0.11;
+      const X = Math.cos(u) + p.g1 * sp, Y = p.g2 * sp * 0.8, Z = Math.sin(u) + p.g3 * sp;
+      return view(X, Y, Z, 0, 1.05, Math.min(W * 0.26, H * 0.95), Math.min(W * 0.26, H * 0.95) * 0.42);
     }
     if (mode === "sheet") {   // rippling sheet
       const X = (p.gu - 0.5) * 2, Z = (p.gv - 0.5) * 0.9;
@@ -340,7 +320,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     }
     if (mode === "swiss") {   // swiss roll, gradient along the roll
       const th = 1.5 * Math.PI * (1 + 2 * p.gu), r = th / 14.2;
-      return view((p.gv - 0.5) * 1.2, r * Math.sin(th + ms / 4000), r * Math.cos(th + ms / 4000), 1.3 + 0.15 * Math.sin(ms / 5000), 0.2, H * 0.42, H * 0.42);
+      return view((p.gv - 0.5) * 1.2, r * Math.sin(th + ms / 4000), r * Math.cos(th + ms / 4000), 1.47 + 0.06 * Math.sin(ms / 5000), 0.15, H * 0.42, H * 0.42);
     }
     if (mode === "torus") {
       const u = p.gu * 6.283 + ms / 5000, v = p.gv * 6.283, R0 = 1, r0 = 0.32;
@@ -360,9 +340,9 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     return [(0.04 + 0.92 * p.ord) * W, H * (0.5 + 0.22 * Math.sin(p.ord * 8.5 + ms / 1500)) + (p.gv - 0.5) * H * 0.12];
   }
 
-  const ORDER = ["shape", "sheet", "hue", "swiss", "color", "torus", "helix"], DUR = 5200;
+  const ORDER = ["beads", "sheet", "ring", "swiss", "color", "torus", "helix"], DUR = 5200;
   let handUntil = 0, now = 0, Lcur = 40;
-  const LINK = { hand: 16, shape: 40, hue: 46, sheet: 34, swiss: 30, torus: 30, helix: 30, color: 40 }, PULL = { hand: 0.03 };
+  const LINK = { hand: 16, beads: 36, ring: 34, sheet: 34, swiss: 30, torus: 30, helix: 30, color: 40 }, PULL = { hand: 0.03 };
 
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
