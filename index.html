@@ -240,17 +240,17 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 
 <script>
 /* Header: an interactive embedding. Points link to near neighbours and alternate between
-   discrete clusters (by shape, by color band, by size) and continuous manifolds (a color
-   ribbon, a rotating swiss roll, a torus). They wave hello on load and on click; the
-   pointer pushes them away. */
+   meaningful clusters (by shape, each laid out as its own lattice; by color band) and
+   connected manifolds sampled on a regular grid (rippling sheet, swiss roll, color ribbon,
+   torus, double helix). "Wave hello" gathers them into a waving hand. */
 (function () {
   const cv = document.getElementById("manifold"), ctx = cv.getContext("2d");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  // restrained palette: light grey -> charcoal -> UF orange (lighter greys on dark backgrounds)
   const dark = () => document.documentElement.dataset.theme === "dark" ||
     (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+  // UF orange -> amber -> golden yellow
   let STOPS = [];
-  const setStops = () => { STOPS = dark() ? [[96, 102, 112], [196, 200, 207], [255, 122, 77]] : [[184, 189, 197], [62, 67, 76], [250, 70, 22]]; };
+  const setStops = () => { STOPS = dark() ? [[255, 110, 60], [255, 160, 40], [255, 210, 70]] : [[250, 70, 22], [252, 128, 10], [236, 172, 0]]; };
   setStops();
   function rgb(t) {
     const x = t * (STOPS.length - 1), i = Math.min(Math.floor(x), STOPS.length - 2), f = x - i;
@@ -260,17 +260,46 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   let W = 0, H = 0, pts = [];
   const mouse = { x: -1e4, y: -1e4, on: false };
 
+  // lattice layouts in unit coordinates (roughly within radius 1)
+  function squareLattice(n) {
+    const m = Math.ceil(Math.sqrt(n)), out = [];
+    for (let i = 0; i < n; i++) out.push([((i % m) / (m - 1) - 0.5) * 1.7, (Math.floor(i / m) / (m - 1) - 0.5) * 1.7]);
+    return out;
+  }
+  function ringLattice(n) {
+    const out = [[0, 0]]; let j = 1;
+    while (out.length < n) { const c = 6 * j; for (let k = 0; k < c && out.length < n; k++) out.push([j, (k / c) * 6.283 + j * 0.3]); j++; }
+    const J = j - 1 || 1;
+    return out.map((q, i) => i === 0 ? [0, 0] : [Math.cos(q[1]) * q[0] / J, Math.sin(q[1]) * q[0] / J]);
+  }
+  function triLattice(n) {
+    const raw = []; let j = 0;
+    while (raw.length < n) { for (let i = 0; i <= j && raw.length < n; i++) raw.push([i - j / 2, j * 0.866]); j++; }
+    const h = (j - 1) * 0.866 || 1;
+    return raw.map(([x, y]) => [x / h * 1.9, (y / h - 0.62) * 1.9]);
+  }
+
   function build() {
     const n = Math.round(Math.min(300, Math.max(190, W / 5.5)));
     pts = [];
     for (let i = 0; i < n; i++) {
-      const t = Math.random(), s = i % 3, ang = rnd(0, 6.283), r = Math.sqrt(Math.random());
-      const c = rgb(t);
-      pts.push({ t, s, c: `rgb(${c})`, cl: c.join(","), sz: rnd(1.3, 3.8),
-        ph: rnd(0, 6.283), jit: rnd(-1, 1), hx: rnd(0.02, 0.98), hy: rnd(0.08, 0.92),
-        ang, r, x: rnd(0, W), y: rnd(0, H), vx: 0, vy: 0, k: 1 });
+      const t = Math.random(), s = i % 3, c = rgb(t);
+      pts.push({ t, s, c: `rgb(${c})`, cl: c.join(","), sz: rnd(1.6, 3.2),
+        ang: rnd(0, 6.283), r: Math.sqrt(Math.random()), x: rnd(0, W), y: rnd(0, H), vx: 0, vy: 0, k: 1 });
     }
-    // hand: sample points inside a simple open-palm silhouette (200x200 design grid)
+    // per-shape lattices
+    const lays = [ringLattice, squareLattice, triLattice];
+    for (let g = 0; g < 3; g++) {
+      const grp = pts.filter(p => p.s === g).sort((a, b) => a.t - b.t), L = lays[g](grp.length);
+      grp.forEach((p, k) => { p.lay = L[k]; });
+    }
+    // manifold grid: rank by color so the gradient runs along u
+    const C = Math.ceil(Math.sqrt(n * 3)), R = Math.ceil(n / C);
+    [...pts].sort((a, b) => a.t - b.t).forEach((p, i) => {
+      p.ord = i / (n - 1); p.strand = i % 2;
+      p.gu = Math.floor(i / R) / Math.max(1, C - 1); p.gv = (i % R) / Math.max(1, R - 1);
+    });
+    // hand: outline of an open palm (200x200 design grid)
     const oc = document.createElement("canvas"); oc.width = oc.height = 200;
     const o = oc.getContext("2d"); o.fillStyle = "#000"; o.strokeStyle = "#000"; o.lineCap = "round";
     o.beginPath(); o.roundRect ? o.roundRect(60, 92, 82, 84, 20) : o.rect(60, 92, 82, 84); o.fill();
@@ -279,73 +308,68 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       .forEach(([x1, y1, x2, y2, w]) => { o.lineWidth = w; o.beginPath(); o.moveTo(x1, y1); o.lineTo(x2, y2); o.stroke(); });
     const img = o.getImageData(0, 0, 200, 200).data, cells = [];
     const inside = (x, y) => x >= 0 && y >= 0 && x < 200 && y < 200 && img[(y * 200 + x) * 4 + 3] > 128;
-    for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2)   // outline cells only: inside, next to outside
+    for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2)
       if (inside(x, y) && (!inside(x - 3, y) || !inside(x + 3, y) || !inside(x, y - 3) || !inside(x, y + 3))) cells.push([x, y]);
     for (let i = cells.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cells[i], cells[j]] = [cells[j], cells[i]]; }
     const pick = cells.slice(0, pts.length).sort((a, b) => a[1] - b[1]);
     [...pts].sort((a, b) => a.t - b.t).forEach((p, i) => { p.hand = pick[i % pick.length]; });
-    // rank points by size within each shape group, for the sunflower layout
-    for (let g = 0; g < 3; g++) {
-      const grp = pts.filter(p => p.s === g).sort((a, b) => b.sz - a.sz);
-      grp.forEach((p, k) => { p.rank = k; p.gn = grp.length; });
-    }
   }
-  // targets in pixels
+
+  // 3D helpers: yaw about vertical axis, then pitch toward the viewer; returns [x, y, depthScale]
+  function view(X, Y, Z, yaw, pitch, sx, sy) {
+    const x1 = X * Math.cos(yaw) + Z * Math.sin(yaw), z1 = -X * Math.sin(yaw) + Z * Math.cos(yaw);
+    const y2 = Y * Math.cos(pitch) - z1 * Math.sin(pitch), z2 = Y * Math.sin(pitch) + z1 * Math.cos(pitch);
+    return [W / 2 + x1 * sx, H / 2 + y2 * sy, 1 + 0.18 * z2];
+  }
+
   function tgt(p, mode, ms) {
-    if (mode === "flow") {
-      return [ (p.hx + 0.035 * Math.sin(ms / 2600 + p.hy * 9 + p.ph)) * W,
-               (p.hy + 0.06 * Math.cos(ms / 3100 + p.hx * 7)) * H ];
+    if (mode === "shape") {   // three clusters: rings of circles, a grid of squares, a lattice of triangles
+      const cx = [0.22, 0.5, 0.78][p.s], R = Math.min(W * 0.1, H * 0.36), a = ms / 9000 * (p.s === 1 ? -1 : 1);
+      const [x, y] = p.lay;
+      return [cx * W + (x * Math.cos(a) - y * Math.sin(a)) * R, H / 2 + (x * Math.sin(a) + y * Math.cos(a)) * R];
     }
-    if (mode === "shape") {
-      const cx = [0.22, 0.5, 0.78][p.s], spin = ms / 6000 * (p.s === 1 ? -1 : 1);
-      const R = Math.min(W * 0.11, H * 0.4);
-      return [ cx * W + Math.cos(p.ang + spin) * p.r * R, H * 0.5 + Math.sin(p.ang + spin) * p.r * R ];
-    }
-    if (mode === "size") {   // sunflower spiral per shape: biggest point at the center, smallest at the rim
-      const cx = [0.22, 0.5, 0.78][p.s], spin = ms / 9000;
-      const R = Math.min(W * 0.12, H * 0.44), rr = Math.sqrt((p.rank + 0.5) / p.gn), a = p.rank * 2.39996 + spin;
-      return [ cx * W + Math.cos(a) * rr * R, H * 0.5 + Math.sin(a) * rr * R ];
-    }
-    if (mode === "hue") {    // four clusters, one per band of the gradient
+    if (mode === "hue") {     // four clusters, one per band of the gradient
       const bin = Math.min(3, Math.floor(p.t * 4)), cx = 0.14 + bin * 0.24;
-      const R = Math.min(W * 0.085, H * 0.38), spin = ms / 8000 * (bin % 2 ? 1 : -1);
-      return [ cx * W + Math.cos(p.ang + spin) * p.r * R, H * 0.5 + Math.sin(p.ang + spin) * p.r * R ];
+      const R = Math.min(W * 0.08, H * 0.36), spin = ms / 8000 * (bin % 2 ? 1 : -1);
+      return [cx * W + Math.cos(p.ang + spin) * p.r * R, H / 2 + Math.sin(p.ang + spin) * p.r * R];
     }
-    if (mode === "swiss") {  // swiss roll: color runs along the roll, which spins about its own axis
-      const th = 1.5 * Math.PI * (1 + 2 * p.t), S = H * 0.4;
-      const cy = th * Math.cos(th) / 14.2, cz = th * Math.sin(th) / 14.2, A = ms / 3500;
-      const Y = cy * Math.cos(A) - cz * Math.sin(A), Z0 = cy * Math.sin(A) + cz * Math.cos(A);
-      const X0 = p.jit * (W * 0.24) / S, B = 1.42 + 0.14 * Math.sin(ms / 5000);
-      const X = X0 * Math.cos(B) + Z0 * Math.sin(B), Z = -X0 * Math.sin(B) + Z0 * Math.cos(B);
-      return [W / 2 + X * S, H / 2 + Y * S, 1 + 0.12 * Z];
+    if (mode === "sheet") {   // rippling sheet
+      const X = (p.gu - 0.5) * 2, Z = (p.gv - 0.5) * 0.9;
+      const Y = 0.32 * Math.sin(p.gu * 9 + ms / 700) * Math.cos(p.gv * 3.1 - ms / 1300);
+      return view(X, Y, Z, 0.25 * Math.sin(ms / 6000), 0.65, W * 0.36, H * 0.75);
     }
-    if (mode === "torus") {  // torus: color runs around the ring
-      const u = p.t * 6.283, v = p.ang, R = 1, r = 0.3, S = Math.min(H * 0.46, W * 0.22);
-      const x = (R + r * Math.cos(v)) * Math.cos(u), y = r * Math.sin(v), z = (R + r * Math.cos(v)) * Math.sin(u);
-      const A = ms / 4000, x2 = x * Math.cos(A) - z * Math.sin(A), z2 = x * Math.sin(A) + z * Math.cos(A);
-      const T = 0.55, y3 = y * Math.cos(T) - z2 * Math.sin(T), z3 = y * Math.sin(T) + z2 * Math.cos(T);
-      return [W / 2 + x2 * S, H / 2 + y3 * S, 1 - 0.3 * z3];
+    if (mode === "swiss") {   // swiss roll, gradient along the roll
+      const th = 1.5 * Math.PI * (1 + 2 * p.gu), r = th / 14.2;
+      return view((p.gv - 0.5) * 1.2, r * Math.sin(th + ms / 4000), r * Math.cos(th + ms / 4000), 1.3 + 0.15 * Math.sin(ms / 5000), 0.2, H * 0.42, H * 0.42);
     }
-    if (mode === "hand") {   // open palm waving about the wrist
+    if (mode === "torus") {
+      const u = p.gu * 6.283 + ms / 5000, v = p.gv * 6.283, R0 = 1, r0 = 0.32;
+      return view((R0 + r0 * Math.cos(v)) * Math.cos(u), r0 * Math.sin(v), (R0 + r0 * Math.cos(v)) * Math.sin(u), 0, 1.05, Math.min(W * 0.2, H * 0.34), Math.min(W * 0.2, H * 0.34));
+    }
+    if (mode === "helix") {   // double helix along the width
+      const a = p.ord * 6.283 * 3 + p.strand * Math.PI + ms / 2600;
+      return view((p.ord - 0.5) * 2, 0.32 * Math.sin(a), 0.32 * Math.cos(a), 0, 0.15, W * 0.4, H * 0.95);
+    }
+    if (mode === "hand") {    // open palm waving about the wrist
       const sc = H * 0.94 / 200, a = 0.38 * Math.sin(ms / 230);
       const dx = (p.hand[0] - 100) * sc, dy = (p.hand[1] - 196) * sc;
       const hx = W < 600 ? W * 0.36 : W / 2;   // keep clear of the button on phones
       return [hx + dx * Math.cos(a) - dy * Math.sin(a), H * 0.97 + dx * Math.sin(a) + dy * Math.cos(a)];
     }
-    // color ribbon
-    return [ (0.04 + 0.92 * p.t) * W,
-             H * (0.5 + 0.22 * Math.sin(p.t * 8.5 + ms / 1500)) + p.jit * H * 0.07 ];
+    // color ribbon (1D manifold)
+    return [(0.04 + 0.92 * p.ord) * W, H * (0.5 + 0.22 * Math.sin(p.ord * 8.5 + ms / 1500)) + (p.gv - 0.5) * H * 0.12];
   }
-  const ORDER = ["flow", "shape", "swiss", "hue", "color", "size", "torus"], DUR = 5200;
-  let handUntil = 4800, now = 0, Lcur = 60;
-  const LINK = { hand: 16, swiss: 30, torus: 34 }, PULL = { hand: 0.03 };
+
+  const ORDER = ["shape", "sheet", "hue", "swiss", "color", "torus", "helix"], DUR = 5200;
+  let handUntil = 0, now = 0, Lcur = 40;
+  const LINK = { hand: 16, shape: 40, hue: 46, sheet: 34, swiss: 30, torus: 30, helix: 30, color: 40 }, PULL = { hand: 0.03 };
+
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
-    const d = Math.min(window.devicePixelRatio || 1, 2);
-    const first = !W;
+    const d = Math.min(window.devicePixelRatio || 1, 2), first = !W;
     W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0);
-    if (first || pts.length === 0) build();
-    if (reduce) { pts.forEach(p => { [p.x, p.y] = tgt(p, "color", 0); }); render(); }
+    build();
+    if (reduce) { pts.forEach(p => { [p.x, p.y] = tgt(p, "sheet", 0); }); render(); }
   }
   function mark(p) {
     const { x, y } = p, sz = p.sz * p.k;
@@ -364,7 +388,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       for (let j = i + 1; j < pts.length; j++) {
         const b = pts[j], dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
         if (d2 < L2) {
-          ctx.strokeStyle = `rgba(${a.cl},${(1 - Math.sqrt(d2) / L) * 0.38})`;
+          ctx.strokeStyle = `rgba(${a.cl},${(1 - Math.sqrt(d2) / L) * 0.4})`;
           ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
@@ -373,7 +397,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       const R = 150;
       for (const p of pts) {
         const dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy);
-        if (d < R) { ctx.strokeStyle = `rgba(${p.cl},${(1 - d / R) * 0.55})`; ctx.beginPath(); ctx.moveTo(mouse.x, mouse.y); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+        if (d < R) { ctx.strokeStyle = `rgba(${p.cl},${(1 - d / R) * 0.5})`; ctx.beginPath(); ctx.moveTo(mouse.x, mouse.y); ctx.lineTo(p.x, p.y); ctx.stroke(); }
       }
     }
     for (const p of pts) { ctx.fillStyle = p.c; mark(p); }
@@ -381,17 +405,17 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   function step(ms) {
     now = ms;
     const seg = Math.floor(ms / DUR), mode = ms < handUntil ? "hand" : ORDER[seg % ORDER.length];
-    Lcur += ((LINK[mode] || Math.max(46, Math.min(74, W / 22))) - Lcur) * 0.06;
+    Lcur += ((LINK[mode] || 40) - Lcur) * 0.06;
+    const kp = PULL[mode] || 0.01;
     for (const p of pts) {
       const [tx, ty, ks = 1] = tgt(p, mode, ms);
       p.k += (ks - p.k) * 0.1;
-      const kp = PULL[mode] || 0.0065;
       p.vx += (tx - p.x) * kp; p.vy += (ty - p.y) * kp;
       if (mouse.on) {
         const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
         if (d2 < 120 * 120 && d2 > 1) { const f = 900 / d2; p.vx += dx * f * 0.02; p.vy += dy * f * 0.02; }
       }
-      p.vx *= 0.9; p.vy *= 0.9; p.x += p.vx; p.y += p.vy;
+      p.vx *= 0.88; p.vy *= 0.88; p.x += p.vx; p.y += p.vy;
     }
     render();
     requestAnimationFrame(step);
@@ -399,12 +423,12 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   function setMouse(e) { const r = cv.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.on = true; }
   cv.addEventListener("pointermove", setMouse);
   cv.addEventListener("pointerdown", setMouse);
+  cv.addEventListener("pointerleave", () => { mouse.on = false; });
   document.getElementById("wave").addEventListener("click", () => {
     if (!reduce) { handUntil = now + 4500; mouse.on = false; return; }
-    pts.forEach(p => { [p.x, p.y] = tgt(p, "hand", 0); }); render();          // reduced motion: show a still hand, then return
-    setTimeout(() => { pts.forEach(p => { [p.x, p.y] = tgt(p, "color", 0); }); render(); }, 3000);
+    pts.forEach(p => { [p.x, p.y] = tgt(p, "hand", 0); }); render();       // reduced motion: a still hand, then back
+    setTimeout(() => { pts.forEach(p => { [p.x, p.y] = tgt(p, "sheet", 0); }); render(); }, 3000);
   });
-  cv.addEventListener("pointerleave", () => { mouse.on = false; });
   window.addEventListener("resize", resize);
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
     setStops(); pts.forEach(p => { const c = rgb(p.t); p.c = `rgb(${c})`; p.cl = c.join(","); });
