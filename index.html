@@ -138,7 +138,6 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 <aside class="side">
   <div class="avatar">
     <img class="photo" src="images/profile_picture.jpeg" alt="Aditya Dutt">
-    <span class="bubble" aria-hidden="true">Hi there!</span>
   </div>
   <div class="who">
     <h1>Aditya Dutt, Ph.D.</h1>
@@ -246,7 +245,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 /* Header: an interactive embedding. Points link to near neighbours and alternate between
    a structured latent space (class clusters strung along a curve or around a ring) and
    connected manifolds sampled on a regular grid (rippling sheet, swiss roll, color ribbon,
-   torus, double helix). "Wave hello" gathers them into a waving avatar. */
+   torus). "Wave hello" gathers them into a waving cartoon avatar. */
 (function () {
   const cv = document.getElementById("manifold"), ctx = cv.getContext("2d");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -266,11 +265,12 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   const mouse = { x: -1e4, y: -1e4, on: false };
 
   function build() {
-    const n = Math.round(Math.min(300, Math.max(190, W / 5.5)));
+    const n = Math.round(Math.min(560, Math.max(280, W / 2.6)));
+    dens = Math.sqrt(260 / n);                                   // keeps link lengths and sizes visually similar
     pts = [];
     for (let i = 0; i < n; i++) {
       const t = Math.random(), s = i % 3, c = rgb(t);
-      pts.push({ t, s, c: `rgb(${c})`, cl: c.join(","), sz: rnd(2.2, 4.2),
+      pts.push({ t, s, c: `rgb(${c})`, cl: c.join(","), sz: rnd(1.9, 3.6),
         g1: gauss(), g2: gauss(), g3: gauss(), bridge: Math.random() < 0.26, x: rnd(0, W), y: rnd(0, H), vx: 0, vy: 0, k: 1 });
     }
     // manifold grid: rank by color so the gradient runs along u
@@ -279,40 +279,44 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       p.ord = i / (n - 1); p.strand = i % 2;
       p.gu = Math.floor(i / R) / Math.max(1, C - 1); p.gv = (i % R) / Math.max(1, R - 1);
     });
-    // avatar: a stylized portrait (glasses, smile, suit and tie) with a raised forearm that waves.
-    // Drawn on a 200x200 design grid; outlines of filled shapes plus thin feature strokes become targets.
-    const layer = draw => { const c = document.createElement("canvas"); c.width = c.height = 200;
-      const o = c.getContext("2d"); o.fillStyle = o.strokeStyle = "#000"; o.lineCap = o.lineJoin = "round"; draw(o);
-      return o.getImageData(0, 0, 200, 200).data; };
-    const body = layer(o => {
-      o.beginPath(); o.ellipse(95, 60, 25, 30, 0, 0, 6.283); o.fill();                       // head
-      o.beginPath(); o.ellipse(95, 40, 27, 17, 0, Math.PI, 0); o.fill();                     // hair
-      o.fillRect(86, 86, 18, 16);                                                            // neck
-      o.beginPath(); o.moveTo(38, 200); o.lineTo(46, 130); o.quadraticCurveTo(95, 98, 144, 130); o.lineTo(152, 200); o.fill();  // torso
-      o.lineWidth = 17; o.beginPath(); o.moveTo(138, 128); o.lineTo(160, 108); o.stroke();  // upper arm
+    assignAvatar();
+  }
+
+  // avatar: points trace the line art of images/avatar.png, colored by the drawing next to each line
+  const AV = { ready: false, ar: 1.26 }, avImg = new Image();
+  avImg.onload = () => assignAvatar();
+  avImg.src = "images/avatar.png";
+  function assignAvatar() {
+    if (!avImg.naturalWidth || !pts.length) return;
+    const w = 240, h = Math.round(w * avImg.naturalHeight / avImg.naturalWidth);
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    const o = c.getContext("2d"); o.drawImage(avImg, 0, 0, w, h);
+    let d; try { d = o.getImageData(0, 0, w, h).data; } catch (e) { return; }
+    const lum = (x, y) => { const i = (y * w + x) * 4; return 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2]; };
+    const n = pts.length; let g = 5, picks = [];
+    for (let it = 0; it < 16; it++) {                     // one line pixel per grid cell: even coverage
+      const seen = new Map();
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (lum(x, y) < 48) {
+        const k = Math.floor(x / g) + "," + Math.floor(y / g); if (!seen.has(k)) seen.set(k, [x, y]); }
+      picks = [...seen.values()];
+      if (picks.length > n * 1.1) g *= 1.08; else if (picks.length < n * 0.95) g /= 1.08; else break;
+    }
+    for (let i = picks.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [picks[i], picks[j]] = [picks[j], picks[i]]; }
+    const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]];
+    const colorNear = (x, y) => {
+      for (let r = 2; r <= 7; r++) for (const [dx, dy] of dirs) {
+        const xx = x + dx * r, yy = y + dy * r;
+        if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
+        const L = lum(xx, yy);
+        if (L > 50 && L < 240) { const i = (yy * w + xx) * 4; return `${d[i]},${d[i + 1]},${d[i + 2]}`; }
+      }
+      return "70,70,76";
+    };
+    pts.forEach((p, i) => {
+      const [x, y] = picks[i % picks.length], u = x / w, v = y / h;
+      p.av = [u, v]; p.avc = colorNear(x, y); p.arm = u < 0.36 && v > 0.5 && v < 0.9;   // the raised hand
     });
-    const face = layer(o => {
-      o.lineWidth = 2.4;
-      [[84, 60], [106, 60]].forEach(([x, y]) => { o.beginPath(); o.arc(x, y, 8, 0, 6.283); o.stroke(); });   // glasses
-      o.beginPath(); o.moveTo(92, 59); o.lineTo(98, 59); o.stroke();
-      o.beginPath(); o.arc(95, 72, 8, 0.2 * Math.PI, 0.8 * Math.PI); o.stroke();            // smile
-      o.beginPath(); o.moveTo(80, 112); o.lineTo(95, 128); o.lineTo(110, 112); o.stroke();  // collar
-      o.beginPath(); o.moveTo(95, 116); o.lineTo(90, 126); o.lineTo(95, 160); o.lineTo(100, 126); o.closePath(); o.stroke();  // tie
-    });
-    const arm = layer(o => {
-      o.lineWidth = 15; o.beginPath(); o.moveTo(160, 108); o.lineTo(170, 66); o.stroke();  // forearm
-      o.beginPath(); o.arc(172, 54, 11, 0, 6.283); o.fill();                                 // palm
-      o.lineWidth = 5; [[164, 46, 160, 28], [170, 44, 169, 24], [176, 44, 178, 25], [181, 48, 186, 32], [162, 58, 150, 50]]
-        .forEach(([a, b, c, d]) => { o.beginPath(); o.moveTo(a, b); o.lineTo(c, d); o.stroke(); });  // fingers + thumb
-    });
-    const ink = (img, x, y) => x >= 0 && y >= 0 && x < 200 && y < 200 && img[(y * 200 + x) * 4 + 3] > 128;
-    const outline = img => { const out = []; for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2)
-      if (ink(img, x, y) && (!ink(img, x - 3, y) || !ink(img, x + 3, y) || !ink(img, x, y - 3) || !ink(img, x, y + 3))) out.push([x, y]); return out; };
-    const strokes = img => { const out = []; for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2) if (ink(img, x, y)) out.push([x, y]); return out; };
-    const take = (arr, k) => { const step = arr.length / k; return Array.from({ length: k }, (_, i) => arr[Math.floor(i * step)]); };
-    const nb = Math.round(n * 0.46), nf = Math.round(n * 0.22), na = n - nb - nf;
-    const targets = [...take(outline(body), nb).map(c => [c, 0]), ...take(strokes(face), nf).map(c => [c, 0]), ...take(outline(arm), na).map(c => [c, 1])];
-    pts.forEach((p, i) => { [p.av, p.arm] = targets[i]; });
+    AV.ready = true; AV.ar = h / w;
   }
 
   // 3D helpers: yaw about vertical axis, then pitch toward the viewer; returns [x, y, depthScale]
@@ -350,25 +354,23 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       const u = p.gu * 6.283 + ms / 5000, v = p.gv * 6.283, R0 = 1, r0 = 0.32;
       return view((R0 + r0 * Math.cos(v)) * Math.cos(u), r0 * Math.sin(v), (R0 + r0 * Math.cos(v)) * Math.sin(u), 0, 1.05, W * 0.3, H * 0.34);
     }
-    if (mode === "helix") {   // double helix along the width
-      const a = p.ord * 6.283 * 3 + p.strand * Math.PI + ms / 2600;
-      return view((p.ord - 0.5) * 2, 0.32 * Math.sin(a), 0.32 * Math.cos(a), 0, 0.15, W * 0.4, H * 0.95);
-    }
-    if (mode === "avatar") {  // portrait; the forearm and hand wave about the elbow
-      const sc = H * 0.95 / 200, ex = 160, ey = 108;
-      let [x, y] = p.av;
-      if (p.arm) { const a = 0.32 * Math.sin(ms / 230), dx = x - ex, dy = y - ey;
-        x = ex + dx * Math.cos(a) - dy * Math.sin(a); y = ey + dx * Math.sin(a) + dy * Math.cos(a); }
-      const cx = W < 600 ? W * 0.38 : W / 2;   // keep clear of the button on phones
-      return [cx + (x - 100) * sc, H * 0.03 + y * sc];
+    if (mode === "avatar") {  // the cartoon; the hand waves about the wrist
+      const ah = H * 0.94, aw = ah / AV.ar, cx = W < 600 ? W * 0.38 : W / 2;
+      let x = (p.av[0] - 0.5) * aw, y = p.av[1] * ah;
+      if (p.arm) { const px = (0.27 - 0.5) * aw, py = 0.845 * ah, a = 0.3 * Math.sin(ms / 220), dx = x - px, dy = y - py;
+        x = px + dx * Math.cos(a) - dy * Math.sin(a); y = py + dx * Math.sin(a) + dy * Math.cos(a); }
+      return [cx + x, H * 0.03 + y];
     }
     // color ribbon (1D manifold)
     return [(0.04 + 0.92 * p.ord) * W, H * (0.5 + 0.22 * Math.sin(p.ord * 8.5 + ms / 1500)) + (p.gv - 0.5) * H * 0.12];
   }
 
-  const ORDER = ["beads", "sheet", "ring", "swiss", "color", "torus", "helix"], DUR = 5200;
-  let handUntil = 0, now = 0, Lcur = 40;
-  const LINK = { avatar: 15, beads: 40, ring: 44, sheet: 44, swiss: 40, torus: 50, helix: 36, color: 44 }, PULL = { avatar: 0.03 };
+  const ORDER = ["beads", "sheet", "ring", "swiss", "color", "torus"], DUR = 5200;
+  let handUntil = 0, now = 0, Lcur = 40, avMix = 0, dens = 1;
+  const blend = (p) => { if (avMix < 0.01 || !p.avc) return p.cl;
+    const a = p.cl.split(",").map(Number), b = p.avc.split(",").map(Number);
+    return a.map((v, k) => Math.round(v + (b[k] - v) * avMix)).join(","); };
+  const LINK = { avatar: 11, beads: 40, ring: 44, sheet: 44, swiss: 40, torus: 50, color: 44 }, PULL = { avatar: 0.03 };
 
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
@@ -387,18 +389,25 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
   function render() {
     ctx.clearRect(0, 0, W, H);
+    for (const p of pts) p.mix = blend(p);
     const L = Lcur, L2 = L * L;
     ctx.lineWidth = 1;
-    for (let i = 0; i < pts.length; i++) {
-      const a = pts[i];
-      for (let j = i + 1; j < pts.length; j++) {
-        const b = pts[j], dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
-        if (d2 < L2) {
-          ctx.strokeStyle = `rgba(${a.cl},${(1 - Math.sqrt(d2) / L) * 0.4})`;
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    const bins = new Map(), key = (gx, gy) => gx * 100003 + gy;      // spatial bins: only check nearby points
+    pts.forEach((p, i) => { const k = key(Math.floor(p.x / L), Math.floor(p.y / L)); (bins.get(k) || bins.set(k, []).get(k)).push(i); });
+    pts.forEach((a, i) => {
+      const gx = Math.floor(a.x / L), gy = Math.floor(a.y / L);
+      for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) {
+        const list = bins.get(key(gx + ox, gy + oy)); if (!list) continue;
+        for (const j of list) {
+          if (j <= i) continue;
+          const b = pts[j], dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
+          if (d2 < L2) {
+            ctx.strokeStyle = `rgba(${a.mix},${(1 - Math.sqrt(d2) / L) * 0.4})`;
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
         }
       }
-    }
+    });
     if (mouse.on) {
       const R = 150;
       for (const p of pts) {
@@ -406,12 +415,13 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
         if (d < R) { ctx.strokeStyle = `rgba(${p.cl},${(1 - d / R) * 0.5})`; ctx.beginPath(); ctx.moveTo(mouse.x, mouse.y); ctx.lineTo(p.x, p.y); ctx.stroke(); }
       }
     }
-    for (const p of pts) { ctx.fillStyle = p.c; mark(p); }
+    for (const p of pts) { ctx.fillStyle = `rgb(${p.mix})`; mark(p); }
   }
   function step(ms) {
     now = ms;
-    const seg = Math.floor(ms / DUR), mode = ms < handUntil ? "avatar" : ORDER[seg % ORDER.length];
-    Lcur += ((LINK[mode] || 40) - Lcur) * 0.06;
+    const seg = Math.floor(ms / DUR), mode = ms < handUntil && AV.ready ? "avatar" : ORDER[seg % ORDER.length];
+    Lcur += ((mode === "avatar" ? LINK.avatar : (LINK[mode] || 40) * dens) - Lcur) * 0.06;
+    avMix += ((mode === "avatar" ? 1 : 0) - avMix) * 0.08;
     const kp = PULL[mode] || 0.01;
     for (const p of pts) {
       const [tx, ty, ks = 1] = tgt(p, mode, ms);
@@ -432,6 +442,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   cv.addEventListener("pointerleave", () => { mouse.on = false; });
   document.getElementById("wave").addEventListener("click", () => {
     if (!reduce) { handUntil = now + 5000; mouse.on = false; return; }
+    if (!AV.ready) return;
     pts.forEach(p => { [p.x, p.y] = tgt(p, "avatar", 0); }); render();     // reduced motion: a still avatar, then back
     setTimeout(() => { pts.forEach(p => { [p.x, p.y] = tgt(p, "sheet", 0); }); render(); }, 3000);
   });
