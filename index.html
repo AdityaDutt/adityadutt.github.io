@@ -53,6 +53,19 @@ h1, h2, h3 { font-weight: 600; text-wrap: balance; letter-spacing: -0.01em; }
 .side { align-self: start; display: grid; gap: 18px; }
 .avatar { position: relative; width: 100%; max-width: 260px; }
 .photo { display: block; width: 100%; aspect-ratio: 1; border-radius: 50%; object-fit: cover; background: var(--fig); }
+.avatar .hi { position: absolute; right: -4%; top: -2%; width: 30%; height: auto; opacity: 0; transform-origin: 60% 90%; pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .18)); }
+.avatar.waving .hi { animation: hi 2.6s ease-in-out both; }
+.avatar.waving .photo { animation: nod 2.6s ease-in-out both; }
+@keyframes hi {
+  0% { opacity: 0; transform: scale(.4) rotate(0); }
+  12% { opacity: 1; transform: scale(1) rotate(-14deg); }
+  24% { transform: scale(1) rotate(16deg); } 36% { transform: scale(1) rotate(-14deg); }
+  48% { transform: scale(1) rotate(16deg); } 60% { transform: scale(1) rotate(-12deg); }
+  74% { opacity: 1; transform: scale(1) rotate(8deg); }
+  100% { opacity: 0; transform: scale(.7) rotate(0); } }
+@keyframes nod { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-3deg); } 40% { transform: rotate(3deg); } 60% { transform: rotate(-2deg); } 80% { transform: rotate(1deg); } }
+@media (prefers-reduced-motion: reduce) { .avatar.waving .hi { animation: none; opacity: 1; } .avatar.waving .photo { animation: none; } }
 .avatar canvas { position: absolute; left: -34px; top: -34px; width: calc(100% + 68px); height: calc(100% + 68px); pointer-events: none; }
 h1 { font-size: 1.85rem; margin: 0 0 8px; line-height: 1.15; font-weight: 700; }
 .title { color: var(--muted); margin: 0 0 8px; line-height: 1.5; }
@@ -82,7 +95,7 @@ h2 { font-size: 1.45rem; margin: 52px 0 18px; scroll-margin-top: 16px; }
 h3 { font-size: 1rem; margin: 0 0 6px; color: var(--fg); }
 
 .themes { display: grid; gap: 36px; }
-.theme { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 40px; align-items: center; max-width: 980px; }
+.theme { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, var(--figw, 300px)); gap: 40px; align-items: center; max-width: 980px; }
 .theme .fig { order: 2; }
 .theme p { margin: 0 0 8px; max-width: 72ch; }
 .papers { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
@@ -96,7 +109,7 @@ h3 { font-size: 1rem; margin: 0 0 6px; color: var(--fg); }
 .fig:has(img) { min-height: 0; background: #fff; }
 .fig:has(img) > span { display: none; }
 .fig > .cap { position: absolute; right: 6px; bottom: 6px; font: 600 0.68rem/1 var(--font); font-style: normal; color: var(--muted); background: rgba(255, 255, 255, 0.9); padding: 3px 6px; border-radius: 4px; }
-.fig img { display: block; width: 100%; height: auto; max-height: 190px; object-fit: contain; padding: 6px; }
+.fig img { display: block; width: 100%; height: auto; max-height: var(--figh, 190px); object-fit: contain; padding: 6px; }
 
 ol.pubs { margin: 0; padding: 0; list-style: none; display: grid; gap: 16px; }
 ol.pubs li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px; max-width: 900px; }
@@ -141,6 +154,11 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   <div class="avatar">
     <img class="photo" src="images/profile_picture.jpeg" alt="Aditya Dutt">
     <canvas id="halo" aria-hidden="true"></canvas>
+    <svg class="hi" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 11.5V6.5a1.5 1.5 0 0 1 3 0v4M10 10V4.5a1.5 1.5 0 0 1 3 0V10M13 10V5.5a1.5 1.5 0 0 1 3 0V11M16 11V8.5a1.5 1.5 0 0 1 3 0v5.5a7 7 0 0 1-7 7h-.5a6.5 6.5 0 0 1-5.4-2.9L3.5 14.6a1.6 1.6 0 0 1 2.5-2L7 13.7"
+        fill="#fff" stroke="url(#wg)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19.5 3.5c1 .8 1.6 1.8 1.8 3M2.7 17.5c.4 1.2 1.1 2.2 2.1 2.9" fill="none" stroke="#fa4616" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
   </div>
   <div class="who">
     <h1>Aditya Dutt, Ph.D.</h1>
@@ -172,19 +190,19 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 
 <h2 id="research">Research</h2>
 <div class="themes">
-  <div class="theme">
+  <div class="theme" style="--figw: 220px; --figh: 170px">
     <div class="fig"><span>COMMANet shared manifold<br>(JSTARS 2022)</span><img src="images/fig-commanet.png" alt="Illustration of a shared latent space where hyperspectral and LiDAR samples of the same class cluster together" onerror="this.remove()"><em class="cap">Illustration</em></div>
     <div><h3>Multimodal alignment and fusion</h3>
       <p>Mapping hyperspectral, LiDAR, SAR and optical data into one class-discriminative space, so one model serves every sensor and a missing sensor can be predicted from the others.</p>
       <div class="papers">JSTARS 2022 · IGARSS 2025</div></div>
   </div>
-  <div class="theme">
+  <div class="theme" style="--figw: 400px; --figh: 240px">
     <div class="fig"><span>Root generation figure<br>(CANVAS 2026)</span><img src="images/fig-roots.png" alt="Generated 3D roots and the corresponding synthetic X-ray CT of a soil core" onerror="this.remove()"></div>
     <div><h3>Generative modeling for scientific data</h3>
       <p>Translating simulated measurements into realistic ones: sampled root skeletons condition generated 3D root geometry, which is then rendered as synthetic X-ray CT of soil cores, so segmentation models can be trained without costly manual annotation.</p>
       <div class="papers">Dissertation 2025 · CANVAS 2025 · CANVAS 2026</div></div>
   </div>
-  <div class="theme">
+  <div class="theme" style="--figw: 400px; --figh: 240px">
     <div class="fig"><span>JUGAAD indicator map<br>(arXiv 2026)</span><img src="images/fig-jugaad.png" alt="Downscaled socioeconomic indicator map of India" onerror="this.remove()"></div>
     <div><h3>Structured latent spaces under limited supervision</h3>
       <p>Contrastive and triplet objectives that shape embedding geometry, autoencoder representations for downscaling survey indicators across India, and weakly supervised graph networks trained on synthetic and incomplete labels.</p>
@@ -411,6 +429,8 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   cv.addEventListener("pointerdown", setMouse);
   cv.addEventListener("pointerleave", () => { mouse.on = false; });
   document.getElementById("wave").addEventListener("click", () => {
+    const av = document.querySelector(".avatar");
+    if (av) { av.classList.remove("waving"); void av.offsetWidth; av.classList.add("waving"); setTimeout(() => av.classList.remove("waving"), 2700); }
     if (!reduce) { handUntil = now + 4500; mouse.on = false; return; }
     pts.forEach(p => { [p.x, p.y] = tgt(p, "hand", 0); }); render();       // reduced motion: a still hand, then back
     setTimeout(() => { pts.forEach(p => { [p.x, p.y] = tgt(p, "sheet", 0); }); render(); }, 3000);
@@ -433,7 +453,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   const col = t => { const S = dark() ? [[255, 110, 60], [255, 210, 70]] : [[250, 70, 22], [236, 172, 0]];
     return S[0].map((v, k) => Math.round(v + (S[1][k] - v) * t)).join(","); };
   let W = 0, R = 0, pts = [];
-  const N = 64;
+  const N = 32;
   function size() {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
     const d = Math.min(window.devicePixelRatio || 1, 2);
@@ -461,7 +481,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
   function draw() {
     ctx.clearRect(0, 0, W, W);
-    const L = R * 0.22; ctx.lineWidth = 0.8;
+    const L = R * 0.3; ctx.lineWidth = 0.8;
     for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
       const a = pts[i], b = pts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
       if (d < L) { ctx.strokeStyle = `rgba(${a.c},${(1 - d / L) * 0.45})`; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
