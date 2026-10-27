@@ -63,21 +63,16 @@ h2::before { content: ""; width: 22px; height: 4px; border-radius: 2px; backgrou
 h3 { font-size: 1.12rem; margin: 0 0 6px; color: var(--accent); }
 
 .themes { display: grid; gap: 36px; }
-.theme { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 32px; align-items: center; }
-.theme:nth-child(even) .fig { order: 2; }
-.theme.wide { grid-template-columns: 1fr; gap: 16px; }
-.theme.wide .fig { order: 0; }
+.theme { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 36px; align-items: center; }
 .theme p { margin: 0 0 8px; max-width: 72ch; }
 .papers { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
 .fig { position: relative; max-width: 100%; border-radius: 10px; border: 1px solid var(--fig-line); overflow: hidden;
   background: var(--fig) repeating-linear-gradient(135deg, transparent 0 9px, var(--fig-line) 9px 10px); min-height: 120px;
   display: grid; place-items: center; text-align: center; font-size: 0.75rem; color: var(--muted); }
 .fig > span { background: var(--fig); padding: 3px 6px; border-radius: 3px; margin: 8px; }
+.fig:has(img) { min-height: 0; background: #fff; }
 .fig:has(img) > span { display: none; }
-.fig img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 8px; }
-.fig.natural { min-height: 0; }
-.fig.natural img { position: static; height: auto; display: block; }
-.theme:not(.wide) .fig { aspect-ratio: 16 / 9; }
+.fig img { display: block; width: 100%; height: auto; max-height: 260px; object-fit: contain; padding: 8px; }
 
 ol.pubs { margin: 0; padding: 0; list-style: none; display: grid; gap: 16px; }
 ol.pubs li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px; max-width: 900px; }
@@ -103,7 +98,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   ol.pubs li:hover { transform: translateX(4px); }
 }
 @media (prefers-reduced-motion: reduce) { main a:hover { text-decoration: underline; } }
-@media (max-width: 720px) { .theme { grid-template-columns: 1fr; } .theme:nth-child(even) .fig { order: 0; } h1 { font-size: 1.85rem; } }
+@media (max-width: 720px) { .theme { grid-template-columns: 1fr; gap: 16px; } h1 { font-size: 1.85rem; } }
 </style>
 </head>
 <body>
@@ -146,8 +141,8 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       <p>Mapping hyperspectral, LiDAR, SAR and optical data into one class-discriminative space, so one model serves every sensor and a missing sensor can be predicted from the others.</p>
       <div class="papers">JSTARS 2022 · IGARSS 2025</div></div>
   </div>
-  <div class="theme wide">
-    <div class="fig natural"><span>Root generation figure<br>(CANVAS 2026)</span><img src="images/fig-roots.png" alt="Root skeletons, generated 3D roots, and generated X-ray CT of a soil core" onerror="this.parentNode.classList.remove('natural');this.remove()"></div>
+  <div class="theme">
+    <div class="fig"><span>Root generation figure<br>(CANVAS 2026)</span><img src="images/fig-roots.png" alt="Generated 3D roots and the corresponding synthetic X-ray CT of a soil core" onerror="this.remove()"></div>
     <div><h3>Generative modeling for scientific data</h3>
       <p>Translating simulated measurements into realistic ones: sampled root skeletons condition generated 3D root geometry, which is then rendered as synthetic X-ray CT of soil cores, so segmentation models can be trained without costly manual annotation.</p>
       <div class="papers">Dissertation 2025 · CANVAS 2025 · CANVAS 2026</div></div>
@@ -222,9 +217,14 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     for (let i = 0; i < n; i++) {
       const t = Math.random(), s = i % 3, ang = rnd(0, 6.283), r = Math.sqrt(Math.random());
       const c = rgb(t);
-      pts.push({ t, s, c: `rgb(${c})`, cl: c.join(","), sz: rnd(1.8, 3),
+      pts.push({ t, s, c: `rgb(${c})`, cl: c.join(","), sz: rnd(1.3, 3.8),
         ph: rnd(0, 6.283), jit: rnd(-1, 1), hx: rnd(0.02, 0.98), hy: rnd(0.08, 0.92),
         ang, r, x: rnd(0, W), y: rnd(0, H), vx: 0, vy: 0 });
+    }
+    // rank points by size within each shape group, for the sunflower layout
+    for (let g = 0; g < 3; g++) {
+      const grp = pts.filter(p => p.s === g).sort((a, b) => b.sz - a.sz);
+      grp.forEach((p, k) => { p.rank = k; p.gn = grp.length; });
     }
   }
   // targets in pixels
@@ -238,11 +238,21 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       const R = Math.min(W * 0.11, H * 0.4);
       return [ cx * W + Math.cos(p.ang + spin) * p.r * R, H * 0.5 + Math.sin(p.ang + spin) * p.r * R ];
     }
+    if (mode === "size") {   // sunflower spiral per shape: biggest point at the center, smallest at the rim
+      const cx = [0.22, 0.5, 0.78][p.s], spin = ms / 9000;
+      const R = Math.min(W * 0.12, H * 0.44), rr = Math.sqrt((p.rank + 0.5) / p.gn), a = p.rank * 2.39996 + spin;
+      return [ cx * W + Math.cos(a) * rr * R, H * 0.5 + Math.sin(a) * rr * R ];
+    }
+    if (mode === "hue") {    // four clusters, one per band of the gradient
+      const bin = Math.min(3, Math.floor(p.t * 4)), cx = 0.14 + bin * 0.24;
+      const R = Math.min(W * 0.085, H * 0.38), spin = ms / 8000 * (bin % 2 ? 1 : -1);
+      return [ cx * W + Math.cos(p.ang + spin) * p.r * R, H * 0.5 + Math.sin(p.ang + spin) * p.r * R ];
+    }
     // color ribbon
     return [ (0.04 + 0.92 * p.t) * W,
              H * (0.5 + 0.22 * Math.sin(p.t * 8.5 + ms / 1500)) + p.jit * H * 0.07 ];
   }
-  const ORDER = ["flow", "shape", "flow", "color"], DUR = 5200;
+  const ORDER = ["flow", "shape", "size", "hue", "color"], DUR = 5200;
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
     const d = Math.min(window.devicePixelRatio || 1, 2);
