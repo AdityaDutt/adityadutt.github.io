@@ -145,7 +145,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     <p class="lab"><a href="https://faculty.eng.ufl.edu/machine-learning/">GatorSense · Machine Learning and Sensing Lab</a></p>
   </div>
   <p class="links">
-    <a href="CV_AdityaDutt.pdf">CV</a>
+    <a href="Resume/CV_AdityaDutt.pdf">CV</a>
     <a href="mailto:aditya.dutt@ufl.edu">Email</a>
     <a href="https://scholar.google.com/citations?user=0uWY-3IAAAAJ&amp;hl=en">Google Scholar</a>
     <!-- TODO: put your ResearchGate profile URL in href, then delete the comment markers around the next line -->
@@ -283,7 +283,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
 
   // avatar: points trace the line art of images/avatar.png, colored by the drawing next to each line
-  const AV = { ready: false, ar: 1.26 }, avImg = new Image();
+  const AV = { ready: false, ar: 1, pivot: [0.88, 0.48] }, avImg = new Image();
   avImg.onload = () => assignAvatar();
   avImg.src = "images/avatar.png";
   const avColor = (u, v) => rgb(Math.min(1, 0.55 * v + 0.45 * u)).join(",");   // site gradient, diagonal sweep
@@ -293,22 +293,42 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     const c = document.createElement("canvas"); c.width = w; c.height = h;
     const o = c.getContext("2d"); o.drawImage(avImg, 0, 0, w, h);
     let d; try { d = o.getImageData(0, 0, w, h).data; } catch (e) { return; }
-    const lum = (x, y) => { const i = (y * w + x) * 4; return 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2]; };
-    const n = pts.length; let g = 5, picks = [];
-    for (let it = 0; it < 16; it++) {                     // one line pixel per grid cell: even coverage
+    const L = new Float32Array(w * h);
+    for (let k = 0; k < w * h; k++) L[k] = 0.3 * d[k * 4] + 0.59 * d[k * 4 + 1] + 0.11 * d[k * 4 + 2];
+    const I = new Float64Array((w + 1) * (h + 1));                       // integral image for local means
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
+      I[(y + 1) * (w + 1) + x + 1] = L[y * w + x] + I[y * (w + 1) + x + 1] + I[(y + 1) * (w + 1) + x] - I[y * (w + 1) + x];
+    const r = 3, mean = (x, y) => { const x0 = Math.max(0, x - r), y0 = Math.max(0, y - r), x1 = Math.min(w, x + r + 1), y1 = Math.min(h, y + r + 1);
+      return (I[y1 * (w + 1) + x1] - I[y0 * (w + 1) + x1] - I[y1 * (w + 1) + x0] + I[y0 * (w + 1) + x0]) / ((x1 - x0) * (y1 - y0)); };
+    const isLine = (x, y) => { const v = L[y * w + x]; return v < 120 && v < mean(x, y) - 25; };   // darker than its surroundings
+    const n = pts.length, nh = Math.round(n * 0.2), nl = n - nh; let g = 4, picks = [];
+    for (let it = 0; it < 18; it++) {                     // one line pixel per grid cell: even coverage
       const seen = new Map();
-      for (let y = 2; y < h - 2; y++) for (let x = 2; x < w - 2; x++) if (lum(x, y) < 40 &&
-          (lum(x - 2, y) > 90 || lum(x + 2, y) > 90 || lum(x, y - 2) > 90 || lum(x, y + 2) > 90)) {
+      for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) if (isLine(x, y)) {
         const k = Math.floor(x / g) + "," + Math.floor(y / g); if (!seen.has(k)) seen.set(k, [x, y]); }
       picks = [...seen.values()];
-      if (picks.length > n * 1.1) g *= 1.08; else if (picks.length < n * 0.95) g /= 1.08; else break;
+      if (picks.length > nl * 1.1) g *= 1.07; else if (picks.length < nl * 0.95) g /= 1.07; else break;
     }
     for (let i = picks.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [picks[i], picks[j]] = [picks[j], picks[i]]; }
+    // waving hand beside the shoulder: outline of an open palm (200x200 design grid)
+    const hc = document.createElement("canvas"); hc.width = hc.height = 200;
+    const ho = hc.getContext("2d"); ho.fillStyle = ho.strokeStyle = "#000"; ho.lineCap = "round";
+    ho.beginPath(); ho.roundRect ? ho.roundRect(60, 92, 82, 84, 20) : ho.rect(60, 92, 82, 84); ho.fill(); ho.fillRect(78, 168, 46, 30);
+    [[73, 100, 66, 34, 21], [96, 98, 96, 20, 22], [119, 100, 125, 30, 21], [138, 110, 151, 56, 18], [64, 146, 28, 108, 21]]
+      .forEach(([x1, y1, x2, y2, lw]) => { ho.lineWidth = lw; ho.beginPath(); ho.moveTo(x1, y1); ho.lineTo(x2, y2); ho.stroke(); });
+    const hd = ho.getImageData(0, 0, 200, 200).data, inH = (x, y) => x >= 0 && y >= 0 && x < 200 && y < 200 && hd[(y * 200 + x) * 4 + 3] > 128;
+    const hcells = [];
+    for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2)
+      if (inH(x, y) && (!inH(x - 3, y) || !inH(x + 3, y) || !inH(x, y - 3) || !inH(x, y + 3))) hcells.push([x, y]);
+    const ar = h / w, HX = 0.9, HY = 0.31, HS = 0.36;
+    AV.pivot = [HX, HY + (196 - 100) / 200 * HS];
     pts.forEach((p, i) => {
-      const [x, y] = picks[i % picks.length], u = x / w, v = y / h;
-      p.av = [u, v]; p.avc = avColor(u, v); p.arm = u < 0.36 && v > 0.5 && v < 0.9;   // the raised hand
+      let u, v;
+      if (i < nl) { const [x, y] = picks[i % picks.length]; u = x / w; v = y / h; p.arm = false; }
+      else { const [hx, hy] = hcells[Math.floor((i - nl) * hcells.length / nh)]; u = HX + (hx - 100) / 200 * HS * ar; v = HY + (hy - 100) / 200 * HS; p.arm = true; }
+      p.av = [u, v]; p.avc = avColor(u, v);
     });
-    AV.ready = true; AV.ar = h / w;
+    AV.ready = true; AV.ar = ar;
   }
 
   // 3D helpers: yaw about vertical axis, then pitch toward the viewer; returns [x, y, depthScale]
@@ -349,7 +369,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     if (mode === "avatar") {  // the cartoon; the hand waves about the wrist
       const ah = H * 0.94, aw = ah / AV.ar, cx = W < 600 ? W * 0.38 : W / 2;
       let x = (p.av[0] - 0.5) * aw, y = p.av[1] * ah;
-      if (p.arm) { const px = (0.27 - 0.5) * aw, py = 0.845 * ah, a = 0.3 * Math.sin(ms / 220), dx = x - px, dy = y - py;
+      if (p.arm) { const px = (AV.pivot[0] - 0.5) * aw, py = AV.pivot[1] * ah, a = 0.3 * Math.sin(ms / 220), dx = x - px, dy = y - py;
         x = px + dx * Math.cos(a) - dy * Math.sin(a); y = py + dx * Math.sin(a) + dy * Math.cos(a); }
       return [cx + x, H * 0.03 + y];
     }
