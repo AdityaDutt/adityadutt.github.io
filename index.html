@@ -50,14 +50,19 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-
 h1, h2, h3 { font-weight: 600; text-wrap: balance; letter-spacing: -0.01em; }
 
 .hero { position: relative; width: 100%; }
-.hero canvas { display: block; width: 100%; height: 360px; cursor: crosshair; touch-action: pan-y; }
-@media (max-width: 600px) { .hero canvas { height: 240px; } }
-.sayhi { display: inline-flex; align-items: center; gap: 7px; margin: 0 0 10px; padding: 4px 0; background: none; border: 0; border-bottom: 2px solid transparent;
-  font: 600 0.78rem/1 var(--font); letter-spacing: 0.12em; text-transform: uppercase; color: var(--head); cursor: pointer; }
-.sayhi svg { width: 15px; height: 15px; transform-origin: 70% 85%; }
-.sayhi:hover { color: var(--hot); border-bottom-color: var(--hot); }
-.sayhi:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-@media (prefers-reduced-motion: no-preference) { .sayhi { transition: color .15s, border-color .15s; } .sayhi:hover svg { animation: wiggle .6s ease-in-out 2; } }
+.hero canvas { display: block; width: 100%; height: 300px; cursor: crosshair; touch-action: pan-y; }
+@media (max-width: 600px) { .hero canvas { height: 200px; } }
+.wavebadge { position: absolute; right: 2%; top: 4%; width: 17%; min-width: 34px; max-width: 46px; aspect-ratio: 1; border-radius: 50%; padding: 0;
+  border: 3px solid var(--bg); background: var(--hot); color: #fff; display: grid; place-items: center; cursor: pointer;
+  box-shadow: 0 4px 12px -4px rgba(250, 70, 22, .55); }
+.wavebadge svg { width: 52%; height: 52%; transform-origin: 70% 85%; }
+.wavebadge:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(250, 70, 22, .55); } 100% { box-shadow: 0 0 0 14px rgba(250, 70, 22, 0); } }
+@media (prefers-reduced-motion: no-preference) {
+  .wavebadge { animation: ping 1.6s ease-out 0.8s 2; transition: transform .15s; }
+  .wavebadge:hover { transform: scale(1.08); }
+  .wavebadge:hover svg { animation: wiggle .6s ease-in-out 2; }
+}
 @keyframes wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-14deg); } 75% { transform: rotate(14deg); } }
 
 .side { align-self: start; display: grid; gap: 18px; }
@@ -142,15 +147,14 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 <aside class="side">
   <div class="avatar">
     <img class="photo" src="images/profile_picture.jpeg" alt="Aditya Dutt">
+    <button class="wavebadge" id="wave" type="button" aria-label="Wave hello" title="Wave hello">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 11.5V6.5a1.5 1.5 0 0 1 3 0v4M10 10V4.5a1.5 1.5 0 0 1 3 0V10M13 10V5.5a1.5 1.5 0 0 1 3 0V11M16 11V8.5a1.5 1.5 0 0 1 3 0v5.5a7 7 0 0 1-7 7h-.5a6.5 6.5 0 0 1-5.4-2.9L3.5 14.6a1.6 1.6 0 0 1 2.5-2L7 13.7"/>
+      </svg>
+    </button>
   </div>
   <div class="who">
     <h1>Aditya Dutt, Ph.D.</h1>
-    <button class="sayhi" id="wave" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M7 11.5V6.5a1.5 1.5 0 0 1 3 0v4M10 10V4.5a1.5 1.5 0 0 1 3 0V10M13 10V5.5a1.5 1.5 0 0 1 3 0V11M16 11V8.5a1.5 1.5 0 0 1 3 0v5.5a7 7 0 0 1-7 7h-.5a6.5 6.5 0 0 1-5.4-2.9L3.5 14.6a1.6 1.6 0 0 1 2.5-2L7 13.7"/>
-      </svg>
-      Say hello
-    </button>
     <p class="title">Postdoctoral Associate<br>Electrical &amp; Computer Engineering<br>University of Florida</p>
     <p class="lab"><a href="https://faculty.eng.ufl.edu/machine-learning/">GatorSense · Machine Learning and Sensing Lab</a></p>
   </div>
