@@ -291,6 +291,35 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       p.gu = Math.floor(i / R) / Math.max(1, C - 1); p.gv = (i % R) / Math.max(1, R - 1);
     });
     assignAvatar();
+    buildMug();
+  }
+
+  // coffee mug: cup, handle, rim and saucer as dot outlines; steam dots rise in three wisps and loop
+  function buildMug() {
+    const n = pts.length, ns = Math.round(n * 0.27), nc = n - ns;
+    const layer = draw => { const c = document.createElement("canvas"); c.width = c.height = 200;
+      const o = c.getContext("2d"); o.fillStyle = o.strokeStyle = "#000"; o.lineCap = "round"; draw(o); return o.getImageData(0, 0, 200, 200).data; };
+    const sil = layer(o => {                                                  // wide, low cafe cup
+      o.beginPath(); o.moveTo(40, 100); o.lineTo(150, 100);
+      o.bezierCurveTo(150, 135, 135, 158, 110, 160); o.lineTo(80, 160); o.bezierCurveTo(55, 158, 40, 135, 40, 100); o.closePath(); o.fill();
+      o.lineWidth = 8; o.beginPath(); o.ellipse(150, 120, 13, 13, 0, -Math.PI / 2, Math.PI / 2); o.stroke();   // small ear handle
+    });
+    const det = layer(o => { o.lineWidth = 2.2;
+      o.beginPath(); o.ellipse(95, 100, 55, 9, 0, 0, 6.283); o.stroke();      // rim
+      o.beginPath(); o.ellipse(95, 103, 45, 5, 0, Math.PI * 0.05, Math.PI * 0.95); o.stroke();   // coffee surface
+    });
+    const ink = (d, x, y) => x >= 0 && y >= 0 && x < 200 && y < 200 && d[(y * 200 + x) * 4 + 3] > 128;
+    const edge = []; for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2)
+      if (ink(sil, x, y) && (!ink(sil, x - 2, y) || !ink(sil, x + 2, y) || !ink(sil, x, y - 2) || !ink(sil, x, y + 2))) edge.push([x, y]);
+    const rim = []; for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2) if (ink(det, x, y)) rim.push([x, y]);
+    const ne = Math.round(nc * 0.7), take = (a, k, i) => a[Math.floor(i * a.length / k)];
+    [...pts].sort((a, b) => a.t - b.t).forEach((p, i) => {
+      p.st = null; p.mug = null;
+      if (i < ne) p.mug = take(edge, ne, i);
+      else if (i < nc) p.mug = take(rim, nc - ne, i - ne);
+      else { const k = i - nc; p.st = { w: k % 3, u: Math.floor(k / 3) / Math.ceil(ns / 3) }; }   // three steam lines, evenly spaced along each
+      p.mgc = p.mug ? rgb(Math.min(1, 0.15 + 0.75 * p.mug[1] / 200)).join(",") : rgb(0.92).join(",");   // steam in light gold
+    });
   }
 
   // avatar: points trace the line art of images/avatar.png, colored by the drawing next to each line
@@ -383,6 +412,15 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       const Y = 0.05 - 0.5 * Math.exp(-((X - cx) * (X - cx) + (Z - cz) * (Z - cz)) / 0.12) + 0.05 * Math.sin(X * 6 + ms / 900);
       return view(X, Y, Z, 0.2 * Math.sin(ms / 8000), 0.6, W * 0.48, H * 0.8);
     }
+    if (mode === "mug") {     // wide cafe cup with three wavy steam lines rippling upward
+      const sc = H * 1.15 / 200, cx = W < 600 ? W * 0.42 : W / 2, top = H / 2 - 95 * sc;   // content spans y 30..160
+      if (p.st) {
+        const y = 90 - p.st.u * 60, ph = ms / 380 + p.st.w * 1.9;           // line runs from just above the rim upward
+        const x = [75, 95, 115][p.st.w] + 5 * Math.sin((90 - y) / 9 - ph);
+        return [cx + (x - 95) * sc, top + y * sc, 1 - 0.65 * p.st.u];        // dots shrink toward the top
+      }
+      return [cx + (p.mug[0] - 95) * sc, top + p.mug[1] * sc];
+    }
     if (mode === "avatar") {  // head-and-shoulders portrait; the raised hand waves about a point just below the frame
       const ah = H * 0.94, aw = Math.min(ah / AV.ar, W * 0.9), cx = W < 600 ? W * 0.42 : W / 2;
       let x = (p.av[0] - 0.5) * aw, y = p.av[1] * ah;
@@ -394,12 +432,13 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     return [(0.04 + 0.92 * p.ord) * W, H * (0.5 + 0.22 * Math.sin(p.ord * 8.5 + ms / 1500)) + (p.gv - 0.5) * H * 0.12];
   }
 
-  const ORDER = ["beads", "sheet", "ring", "saddle", "color", "curtain", "drape"], DUR = 5200;
-  let handUntil = 0, now = 0, Lcur = 40, avMix = 0, dens = 1;
-  const blend = (p) => { if (avMix < 0.01 || !p.avc) return p.cl;
-    const a = p.cl.split(",").map(Number), b = p.avc.split(",").map(Number);
+  const ORDER = ["beads", "sheet", "ring", "saddle", "color", "curtain", "drape", "mug"], DUR = 5200;
+  const FIG = { avatar: 1, mug: 1 };                // figure modes: clean dots, no links, no ripple or breathing
+  let handUntil = 0, now = 0, Lcur = 40, avMix = 0, dens = 1, figNow = "avatar";
+  const blend = (p) => { const fc = figNow === "mug" ? p.mgc : p.avc; if (avMix < 0.01 || !fc) return p.cl;
+    const a = p.cl.split(",").map(Number), b = fc.split(",").map(Number);
     return a.map((v, k) => Math.round(v + (b[k] - v) * avMix)).join(","); };
-  const LINK = { avatar: 0.1, beads: 40, ring: 44, sheet: 44, saddle: 46, curtain: 40, drape: 46, color: 44 }, PULL = { avatar: 0.03 };
+  const LINK = { avatar: 0.1, beads: 40, ring: 44, sheet: 44, saddle: 46, curtain: 40, drape: 46, color: 44 }, PULL = { avatar: 0.03, mug: 0.03 };
 
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
@@ -410,7 +449,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
   function mark(p) {
     const { x, y } = p, sz = p.sz * p.k * (1 - 0.45 * avMix);
-    if (avMix > 0.5) { ctx.beginPath(); ctx.arc(x, y, Math.max(2.2, sz), 0, 6.283); ctx.fill(); return; }   // clean dots for the avatar
+    if (avMix > 0.5) { ctx.beginPath(); ctx.arc(x, y, Math.max(2.2 * Math.min(1, p.k), sz), 0, 6.283); ctx.fill(); return; }   // clean dots for the avatar
     ctx.beginPath();
     if (p.s === 0) ctx.arc(x, y, sz, 0, 6.283);
     else if (p.s === 1) ctx.rect(x - sz * 0.9, y - sz * 0.9, sz * 1.8, sz * 1.8);
@@ -443,15 +482,16 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   function step(ms) {
     now = ms;
     const seg = Math.floor(ms / DUR), mode = ms < handUntil && AV.ready ? "avatar" : ORDER[seg % ORDER.length];
-    Lcur += ((mode === "avatar" ? LINK.avatar : (LINK[mode] || 40) * dens) - Lcur) * 0.06;
-    avMix += ((mode === "avatar" ? 1 : 0) - avMix) * 0.08;
+    if (FIG[mode]) figNow = mode;
+    Lcur += ((FIG[mode] ? LINK.avatar : (LINK[mode] || 40) * dens) - Lcur) * 0.06;
+    avMix += ((FIG[mode] ? 1 : 0) - avMix) * 0.08;
     const kp = PULL[mode] || 0.01;
-    if (mode !== "avatar" && !(ev && ev.seg === seg) && ms - seg * DUR > 2000)   // mid-manifold: ripple from the center
+    if (!FIG[mode] && !(ev && ev.seg === seg) && ms - seg * DUR > 2000)   // mid-manifold: ripple from the center
       ev = { seg, type: "ripple", x: W / 2, y: H / 2, t0: ms };   // a drop lands in the middle
-    const age = ev ? ms - ev.t0 : Infinity, evOn = mode !== "avatar" && age < EV_LEN;
+    const age = ev ? ms - ev.t0 : Infinity, evOn = !FIG[mode] && age < EV_LEN;
     for (const p of pts) {
       let [tx, ty, ks = 1] = tgt(p, mode, ms);
-      if (mode !== "avatar") {                     // breathing: the whole manifold slowly expands and contracts
+      if (!FIG[mode]) {                            // breathing: the whole manifold slowly expands and contracts
         const b = 1 + 0.03 * Math.sin(ms / 1700);
         tx = W / 2 + (tx - W / 2) * b; ty = H / 2 + (ty - H / 2) * b;
       }
@@ -461,6 +501,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
         tx += dx / d * off; ty += dy / d * off;
       }
       p.k += (ks - p.k) * 0.1;
+      if (p.snap) { p.x = tx; p.y = ty; p.vx = p.vy = 0; p.snap = false; }   // steam restarts at the rim without streaking
       p.vx += (tx - p.x) * kp; p.vy += (ty - p.y) * kp;
       if (mouse.on) {
         const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
