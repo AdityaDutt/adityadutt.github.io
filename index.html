@@ -8,7 +8,7 @@
 <style>
 /* Layout: full-bleed interactive embedding header, then a wide content column; paragraphs capped for readability */
 :root {
-  --bg: #ffffff; --fg: #111418; --muted: #5b616b; --rule: #e3e6ea;
+  --bg: #ffffff; --fg: #2a2e35; --muted: #5b616b; --rule: #e3e6ea; --head: #4a505a;
   --fig: #f2f4f7; --fig-line: #d3d9e0; --chip: #f3f5f8;
   --accent: #0021a5;            /* UF blue: links, headings */
   --hot: #fa4616;               /* UF orange: small marks only */
@@ -16,11 +16,11 @@
   --font: "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0f1115; --fg: #eceef2; --muted: #9ba2ad; --rule: #262a31;
+  --bg: #0f1115; --fg: #e3e6ea; --muted: #9ba2ad; --rule: #262a31; --head: #b8bec8;
   --fig: #1a1d23; --fig-line: #333943; --chip: #1a1d23;
   --accent: #7ea2ff; --hot: #ff7a4d; color-scheme: dark } }
 :root[data-theme="dark"] {
-  --bg: #0f1115; --fg: #eceef2; --muted: #9ba2ad; --rule: #262a31;
+  --bg: #0f1115; --fg: #e3e6ea; --muted: #9ba2ad; --rule: #262a31; --head: #b8bec8;
   --fig: #1a1d23; --fig-line: #333943; --chip: #1a1d23;
   --accent: #7ea2ff; --hot: #ff7a4d; color-scheme: dark }
 
@@ -41,14 +41,14 @@ h1, h2, h3 { font-weight: 600; text-wrap: balance; letter-spacing: -0.01em; }
 .hero { position: relative; width: 100%; }
 .hero canvas { display: block; width: 100%; height: 360px; cursor: crosshair; touch-action: pan-y; }
 @media (max-width: 600px) { .hero canvas { height: 240px; } }
-.wave { position: absolute; left: max(32px, env(safe-area-inset-left, 0px), calc((100% - 1320px) / 2 + 32px)); bottom: 14px;   /* lines up with the photo column */ display: inline-flex; align-items: center; gap: 8px;
+.wave { position: absolute; left: calc(max(32px, env(safe-area-inset-left, 0px), (100% - 1320px) / 2 + 32px) + 130px); translate: -50% 0; bottom: 14px;   /* centered over the photo */ display: inline-flex; align-items: center; gap: 8px;
   font: 600 0.9rem/1 var(--font); color: var(--fg); background: var(--bg); padding: 9px 16px 9px 12px; border-radius: 999px; cursor: pointer;
   border: 1.5px solid transparent; background: linear-gradient(var(--bg), var(--bg)) padding-box, var(--grad) border-box; }
 .wave svg { width: 18px; height: 18px; }
 .wave:hover { box-shadow: 0 6px 18px -8px rgba(138, 63, 252, .55); }
 .wave:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media (prefers-reduced-motion: no-preference) { .wave { transition: box-shadow .2s, transform .2s; } .wave:active { transform: scale(.96); } }
-@media (max-width: 600px) { .wave { left: auto; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 10px; font-size: 0.85rem; } }
+@media (max-width: 600px) { .wave { left: auto; translate: none; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 10px; font-size: 0.85rem; } }
 
 .side { align-self: start; display: grid; gap: 18px; }
 .avatar { position: relative; width: 100%; max-width: 260px; }
@@ -77,7 +77,8 @@ nav a:hover { color: var(--accent); }
 .notice::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--hot); flex: none; }
 .notice b { color: var(--fg); }
 
-h2 { font-size: 1.45rem; margin: 52px 0 18px; scroll-margin-top: 16px; }
+h2 { font-size: 0.92rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--head);
+  margin: 48px 0 22px; padding-top: 26px; border-top: 1px solid var(--rule); scroll-margin-top: 16px; }
 h3 { font-size: 1rem; margin: 0 0 6px; color: var(--fg); }
 
 .themes { display: grid; gap: 36px; }
