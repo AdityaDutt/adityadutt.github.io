@@ -79,9 +79,9 @@ nav a:hover { color: var(--accent); }
 .notice::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--hot); flex: none; }
 .notice b { color: var(--fg); }
 
-h2 { font-size: 0.92rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--head);
+h2 { font-size: 1.05rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--head);
   margin: 48px 0 22px; padding-top: 26px; border-top: 1px solid var(--rule); scroll-margin-top: 16px; }
-h3 { font-size: 1.14rem; font-weight: 600; letter-spacing: -0.012em; line-height: 1.3; margin: 0 0 8px; color: var(--fg); }
+h3 { font-size: 1rem; font-weight: 600; letter-spacing: -0.005em; line-height: 1.35; margin: 0 0 8px; color: var(--fg); }
 
 .themes { display: grid; gap: 36px; }
 .theme { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, var(--figw, 300px)); gap: 40px; align-items: center; max-width: 980px; }
@@ -272,8 +272,8 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   const gauss = () => Math.max(-2.2, Math.min(2.2, Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(6.283 * Math.random())));
   let W = 0, H = 0, pts = [];
   const mouse = { x: -1e4, y: -1e4, on: false, down: false };
-  let ev = null;                                   // per-manifold event: a gravity well ("pull") or a shockwave ("push")
-  const EV_LEN = 1900;
+  let ev = null;                                   // per-manifold event: a gravity well ("pull") or a ripple
+  const EV_LEN = 2600;
 
   function build() {
     const n = Math.round(Math.min(560, Math.max(280, W / 2.6)));
@@ -455,16 +455,20 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     avMix += ((mode === "avatar" ? 1 : 0) - avMix) * 0.08;
     const kp = PULL[mode] || 0.01;
     if (mode !== "avatar" && !(ev && ev.seg === seg) && ms - seg * DUR > 2200)   // mid-manifold: alternate pull and push
-      ev = { seg, type: seg % 2 ? "push" : "pull", x: W * (0.2 + 0.6 * Math.random()), y: H * (0.3 + 0.4 * Math.random()), t0: ms };
+      ev = { seg, type: seg % 2 ? "ripple" : "pull", x: W * (0.2 + 0.6 * Math.random()), y: H * (0.3 + 0.4 * Math.random()), t0: ms };
     const age = ev ? ms - ev.t0 : Infinity, evOn = mode !== "avatar" && age < EV_LEN;
     for (const p of pts) {
-      const [tx, ty, ks = 1] = tgt(p, mode, ms);
+      let [tx, ty, ks = 1] = tgt(p, mode, ms);
+      if (evOn && ev.type === "ripple") {          // a ring-shaped wave travels outward through the manifold
+        const dx = tx - ev.x, dy = ty - ev.y, d = Math.hypot(dx, dy) + 0.01, r = age * 0.32;
+        const q = (d - r) / 70, env = Math.exp(-q * q) * (1 - age / EV_LEN), off = 16 * env * Math.sin((d - r) / 12);
+        tx += dx / d * off; ty += dy / d * off;
+      }
       p.k += (ks - p.k) * 0.1;
       p.vx += (tx - p.x) * kp; p.vy += (ty - p.y) * kp;
       if (evOn) {
         const dx = p.x - ev.x, dy = p.y - ev.y, d = Math.hypot(dx, dy) + 0.01;
         if (ev.type === "pull") { const R = 170; if (d < R) { const f = 0.9 * Math.sin(Math.PI * age / EV_LEN) * (1 - d / R); p.vx -= dx / d * f; p.vy -= dy / d * f; } }
-        else if (age < 260) { const R = 230; if (d < R) { const f = 2.6 * (1 - d / R) * (1 - age / 260); p.vx += dx / d * f; p.vy += dy / d * f; } }   // soft burst, then the manifold refills
       }
       if (mouse.on) {
         const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
