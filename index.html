@@ -286,6 +286,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   const AV = { ready: false, ar: 1.26 }, avImg = new Image();
   avImg.onload = () => assignAvatar();
   avImg.src = "images/avatar.png";
+  const avColor = (u, v) => rgb(Math.min(1, 0.55 * v + 0.45 * u)).join(",");   // site gradient, diagonal sweep
   function assignAvatar() {
     if (!avImg.naturalWidth || !pts.length) return;
     const w = 240, h = Math.round(w * avImg.naturalHeight / avImg.naturalWidth);
@@ -303,19 +304,9 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       if (picks.length > n * 1.1) g *= 1.08; else if (picks.length < n * 0.95) g /= 1.08; else break;
     }
     for (let i = picks.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [picks[i], picks[j]] = [picks[j], picks[i]]; }
-    const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]];
-    const colorNear = (x, y) => {
-      for (let r = 2; r <= 7; r++) for (const [dx, dy] of dirs) {
-        const xx = x + dx * r, yy = y + dy * r;
-        if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
-        const L = lum(xx, yy);
-        if (L > 50 && L < 215) { const i = (yy * w + xx) * 4; return [d[i], d[i + 1], d[i + 2]].map(v => Math.round(v * 0.8)).join(","); }
-      }
-      return "70,70,76";
-    };
     pts.forEach((p, i) => {
       const [x, y] = picks[i % picks.length], u = x / w, v = y / h;
-      p.av = [u, v]; p.avc = colorNear(x, y); p.arm = u < 0.36 && v > 0.5 && v < 0.9;   // the raised hand
+      p.av = [u, v]; p.avc = avColor(u, v); p.arm = u < 0.36 && v > 0.5 && v < 0.9;   // the raised hand
     });
     AV.ready = true; AV.ar = h / w;
   }
@@ -382,7 +373,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
   function mark(p) {
     const { x, y } = p, sz = p.sz * p.k * (1 - 0.45 * avMix);
-    if (avMix > 0.5) { ctx.beginPath(); ctx.arc(x, y, Math.max(2, sz * 0.95), 0, 6.283); ctx.fill(); return; }   // clean dots for the avatar
+    if (avMix > 0.5) { ctx.beginPath(); ctx.arc(x, y, Math.max(2.2, sz), 0, 6.283); ctx.fill(); return; }   // clean dots for the avatar
     ctx.beginPath();
     if (p.s === 0) ctx.arc(x, y, sz, 0, 6.283);
     else if (p.s === 1) ctx.rect(x - sz * 0.9, y - sz * 0.9, sz * 1.8, sz * 1.8);
@@ -450,7 +441,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   });
   window.addEventListener("resize", resize);
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-    setStops(); pts.forEach(p => { const c = rgb(p.t); p.c = `rgb(${c})`; p.cl = c.join(","); });
+    setStops(); pts.forEach(p => { const c = rgb(p.t); p.c = `rgb(${c})`; p.cl = c.join(","); if (p.av) p.avc = avColor(p.av[0], p.av[1]); });
   });
   resize();
   if (!reduce) requestAnimationFrame(step);
