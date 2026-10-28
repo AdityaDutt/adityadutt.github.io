@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aditya Dutt</title>
 <meta name="description" content="Aditya Dutt, Postdoctoral Associate, ECE, University of Florida. Multimodal learning, generative modeling for scientific data, structured latent spaces.">
+<!-- link previews (LinkedIn, Slack, email, X) -->
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Aditya Dutt, Ph.D.">
+<meta property="og:description" content="Postdoctoral Associate, ECE, University of Florida. Multimodal learning, generative modeling for scientific data, and structured latent spaces. On the faculty job market, 2026–27.">
+<meta property="og:url" content="https://adityadutt.github.io/">
+<meta property="og:image" content="https://adityadutt.github.io/images/profile_picture.jpeg">
+<meta property="og:image:alt" content="Portrait of Aditya Dutt">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://adityadutt.github.io/">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg stroke='%23fc800a' stroke-width='1.6' opacity='.55'%3E%3Cpath d='M7 22L16 8L25 20L7 22M16 8L16 25'/%3E%3C/g%3E%3Ccircle cx='7' cy='22' r='4' fill='%23fa4616'/%3E%3Ccircle cx='16' cy='8' r='4' fill='%23fc800a'/%3E%3Ccircle cx='25' cy='20' r='4' fill='%23ecac00'/%3E%3Ccircle cx='16' cy='25' r='3' fill='%23fc800a'/%3E%3C/svg%3E">
 <style>
 /* Layout: full-bleed interactive embedding header, then a wide content column; paragraphs capped for readability */
 :root {
@@ -151,8 +161,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     <a href="Resume/CV_AdityaDutt.pdf">CV</a>
     <a href="mailto:aditya.dutt@ufl.edu">Email</a>
     <a href="https://scholar.google.com/citations?user=0uWY-3IAAAAJ&amp;hl=en">Google Scholar</a>
-    <!-- TODO: put your ResearchGate profile URL in href, then delete the comment markers around the next line -->
-    <!-- <a href="RESEARCHGATE_PROFILE_URL">ResearchGate</a> -->
+    <a href="https://www.researchgate.net/profile/Aditya-Dutt-3">ResearchGate</a>
     <a href="https://github.com/AdityaDutt">GitHub</a>
     <a href="https://www.linkedin.com/in/adityadutt12/">LinkedIn</a>
     <a href="https://adityadutt.medium.com/">Blog</a>
@@ -510,8 +519,13 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       p.vx *= 0.88; p.vy *= 0.88; p.x += p.vx; p.y += p.vy;
     }
     render();
-    requestAnimationFrame(step);
+    if (visible) requestAnimationFrame(step); else paused = true;
   }
+  let visible = true, paused = false;                // stop drawing while the header is off screen
+  new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    if (visible && paused && !reduce) { paused = false; requestAnimationFrame(step); }
+  }).observe(cv);
   function setMouse(e) { const r = cv.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.on = true; }
   cv.addEventListener("pointermove", setMouse);
   cv.addEventListener("pointerdown", setMouse);
