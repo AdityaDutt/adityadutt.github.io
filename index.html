@@ -271,9 +271,9 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   const rnd = (a, b) => a + Math.random() * (b - a);
   const gauss = () => Math.max(-2.2, Math.min(2.2, Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(6.283 * Math.random())));
   let W = 0, H = 0, pts = [];
-  const mouse = { x: -1e4, y: -1e4, on: false, down: false };
-  let ev = null;                                   // per-manifold event: a gravity well ("pull") or a ripple
-  const EV_LEN = 2600;
+  const mouse = { x: -1e4, y: -1e4, on: false };
+  let ev = null;                                   // per-manifold ripple from the center
+  const EV_LEN = 3200;
 
   function build() {
     const n = Math.round(Math.min(560, Math.max(280, W / 2.6)));
@@ -438,14 +438,6 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
         }
       }
     });
-    const tether = (ax, ay, R, alpha) => {           // faint lines from an attractor to the points it holds
-      for (const p of pts) {
-        const dx = p.x - ax, dy = p.y - ay, d = Math.hypot(dx, dy);
-        if (d < R) { ctx.strokeStyle = `rgba(${p.mix},${(1 - d / R) * alpha})`; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(p.x, p.y); ctx.stroke(); }
-      }
-    };
-    if (mouse.on) tether(mouse.x, mouse.y, 150, mouse.down ? 0.7 : 0.5);
-    if (ev && ev.type === "pull" && now - ev.t0 < EV_LEN) tether(ev.x, ev.y, 170, 0.45 * Math.sin(Math.PI * (now - ev.t0) / EV_LEN));
     for (const p of pts) { ctx.fillStyle = `rgb(${p.mix})`; mark(p); }
   }
   function step(ms) {
@@ -454,26 +446,25 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     Lcur += ((mode === "avatar" ? LINK.avatar : (LINK[mode] || 40) * dens) - Lcur) * 0.06;
     avMix += ((mode === "avatar" ? 1 : 0) - avMix) * 0.08;
     const kp = PULL[mode] || 0.01;
-    if (mode !== "avatar" && !(ev && ev.seg === seg) && ms - seg * DUR > 2200)   // mid-manifold: alternate pull and push
-      ev = { seg, type: seg % 2 ? "ripple" : "pull", x: W * (0.2 + 0.6 * Math.random()), y: H * (0.3 + 0.4 * Math.random()), t0: ms };
+    if (mode !== "avatar" && !(ev && ev.seg === seg) && ms - seg * DUR > 2000)   // mid-manifold: ripple from the center
+      ev = { seg, type: "ripple", x: W / 2, y: H / 2, t0: ms };   // a drop lands in the middle
     const age = ev ? ms - ev.t0 : Infinity, evOn = mode !== "avatar" && age < EV_LEN;
     for (const p of pts) {
       let [tx, ty, ks = 1] = tgt(p, mode, ms);
-      if (evOn && ev.type === "ripple") {          // a ring-shaped wave travels outward through the manifold
-        const dx = tx - ev.x, dy = ty - ev.y, d = Math.hypot(dx, dy) + 0.01, r = age * 0.32;
-        const q = (d - r) / 70, env = Math.exp(-q * q) * (1 - age / EV_LEN), off = 16 * env * Math.sin((d - r) / 12);
+      if (mode !== "avatar") {                     // breathing: the whole manifold slowly expands and contracts
+        const b = 1 + 0.03 * Math.sin(ms / 1700);
+        tx = W / 2 + (tx - W / 2) * b; ty = H / 2 + (ty - H / 2) * b;
+      }
+      if (evOn) {                                  // rings travel outward from the drop and fade
+        const dx = tx - ev.x, dy = ty - ev.y, d = Math.hypot(dx, dy) + 0.01, r = age * 0.3;
+        const q = (d - r) / 120, env = Math.exp(-q * q) * (1 - age / EV_LEN), off = 15 * env * Math.sin((d - r) / 22);
         tx += dx / d * off; ty += dy / d * off;
       }
       p.k += (ks - p.k) * 0.1;
       p.vx += (tx - p.x) * kp; p.vy += (ty - p.y) * kp;
-      if (evOn) {
-        const dx = p.x - ev.x, dy = p.y - ev.y, d = Math.hypot(dx, dy) + 0.01;
-        if (ev.type === "pull") { const R = 170; if (d < R) { const f = 0.9 * Math.sin(Math.PI * age / EV_LEN) * (1 - d / R); p.vx -= dx / d * f; p.vy -= dy / d * f; } }
-      }
       if (mouse.on) {
         const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
-        if (mouse.down) { const d = Math.sqrt(d2) + 0.01; if (d < 180) { const f = 0.8 * (1 - d / 180); p.vx -= dx / d * f; p.vy -= dy / d * f; } }   // hold to pull
-        else if (d2 < 120 * 120 && d2 > 1) { const f = 900 / d2; p.vx += dx * f * 0.02; p.vy += dy * f * 0.02; }        // hover pushes
+        if (d2 < 120 * 120 && d2 > 1) { const f = 900 / d2; p.vx += dx * f * 0.02; p.vy += dy * f * 0.02; }   // hover gently pushes
       }
       p.vx *= 0.88; p.vy *= 0.88; p.x += p.vx; p.y += p.vy;
     }
@@ -482,9 +473,8 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
   function setMouse(e) { const r = cv.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.on = true; }
   cv.addEventListener("pointermove", setMouse);
-  cv.addEventListener("pointerdown", e => { setMouse(e); mouse.down = true; });
-  window.addEventListener("pointerup", () => { mouse.down = false; });
-  cv.addEventListener("pointerleave", () => { mouse.on = false; mouse.down = false; });
+  cv.addEventListener("pointerdown", setMouse);
+  cv.addEventListener("pointerleave", () => { mouse.on = false; });
   document.getElementById("wave").addEventListener("click", () => {
     if (!reduce) { handUntil = now + 5000; mouse.on = false; return; }
     if (!AV.ready) return;
