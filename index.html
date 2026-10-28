@@ -460,6 +460,9 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   const LINK = { avatar: 0.1, beads: 40, ring: 44, sheet: 44, saddle: 46, curtain: 40, drape: 46, color: 44 }, PULL = { avatar: 0.03, mug: 0.03 };
 
   function resize() {
+    // start the band at the photo's left edge
+    const x0 = Math.max(0, document.querySelector(".photo").getBoundingClientRect().left - cv.parentNode.getBoundingClientRect().left);
+    cv.style.marginLeft = x0 + "px"; cv.style.width = `calc(100% - ${x0}px)`;
     const r = cv.getBoundingClientRect(); if (!r.width) return;
     const d = Math.min(window.devicePixelRatio || 1, 2), first = !W;
     W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0);
