@@ -185,7 +185,12 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     <div class="fig"><span>JUGAAD indicator map<br>(arXiv 2026)</span><img src="images/fig-jugaad.png" alt="Downscaled socioeconomic indicator map of India" onerror="this.remove()"></div>
     <div><h3>Structured latent spaces under limited supervision</h3>
       <p>Contrastive and triplet objectives that shape embedding geometry, autoencoder representations for downscaling survey indicators across India, and weakly supervised graph networks trained on synthetic and incomplete labels.</p>
-      <div class="papers">TASLP 2023 · arXiv 2026</div></div>
+      <div class="papers">arXiv 2026</div></div>
+  </div>
+  <div class="theme" style="--figw: 400px; --figh: 240px">
+    <div><h3>Wavelet representations for speech emotion recognition</h3>
+      <p>Wavelet multiresolution analysis localizes speech in both time and frequency, unlike Fourier features. WaDER combines wavelet features with an autoencoder, 1D CNNs and LSTMs to recognize emotion from speech.</p>
+      <div class="papers">IEEE/ACM TASLP 2023</div></div>
   </div>
 </div>
 
@@ -245,7 +250,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
 /* Header: an interactive embedding. Points link to near neighbours and alternate between
    a structured latent space (class clusters strung along a curve or around a ring) and
    connected manifolds sampled on a regular grid (rippling sheet, swiss roll, color ribbon,
-   torus). "Wave hello" gathers them into a waving cartoon avatar. */
+   torus). "Wave hello" gathers them into a swaying portrait of the avatar. */
 (function () {
   const cv = document.getElementById("manifold"), ctx = cv.getContext("2d");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -283,7 +288,7 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
   }
 
   // avatar: points trace the line art of images/avatar.png, colored by the drawing next to each line
-  const AV = { ready: false, ar: 1, pivot: [0.88, 0.48] }, avImg = new Image();
+  const AV = { ready: false, ar: 0.72 }, avImg = new Image();
   avImg.onload = () => assignAvatar();
   avImg.src = "images/avatar.png";
   const avColor = (u, v) => rgb(Math.min(1, 0.55 * v + 0.45 * u)).join(",");   // site gradient, diagonal sweep
@@ -301,44 +306,17 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
     const r = 3, mean = (x, y) => { const x0 = Math.max(0, x - r), y0 = Math.max(0, y - r), x1 = Math.min(w, x + r + 1), y1 = Math.min(h, y + r + 1);
       return (I[y1 * (w + 1) + x1] - I[y0 * (w + 1) + x1] - I[y1 * (w + 1) + x0] + I[y0 * (w + 1) + x0]) / ((x1 - x0) * (y1 - y0)); };
     const isLine = (x, y) => { const v = L[y * w + x]; return v < 120 && v < mean(x, y) - 25; };   // darker than its surroundings
-    const n = pts.length, nh = Math.round(n * 0.15), ns = Math.round(n * 0.08), nl = n - nh - ns; let g = 4, picks = [];
+    const n = pts.length; let g = 4, picks = [];
     for (let it = 0; it < 18; it++) {                     // one line pixel per grid cell: even coverage
       const seen = new Map();
       for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) if (isLine(x, y)) {
         const k = Math.floor(x / g) + "," + Math.floor(y / g); if (!seen.has(k)) seen.set(k, [x, y]); }
       picks = [...seen.values()];
-      if (picks.length > nl * 1.1) g *= 1.07; else if (picks.length < nl * 0.95) g /= 1.07; else break;
+      if (picks.length > n * 1.1) g *= 1.07; else if (picks.length < n * 0.95) g /= 1.07; else break;
     }
     for (let i = picks.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [picks[i], picks[j]] = [picks[j], picks[i]]; }
-    // waving hand beside the shoulder: outline of an open palm (200x200 design grid)
-    const hc = document.createElement("canvas"); hc.width = hc.height = 200;
-    const ho = hc.getContext("2d"); ho.fillStyle = ho.strokeStyle = "#000"; ho.lineCap = "round";
-    ho.beginPath(); ho.roundRect ? ho.roundRect(60, 92, 82, 84, 20) : ho.rect(60, 92, 82, 84); ho.fill(); ho.fillRect(78, 168, 46, 30);
-    [[73, 100, 66, 34, 21], [96, 98, 96, 20, 22], [119, 100, 125, 30, 21], [138, 110, 151, 56, 18], [64, 146, 28, 108, 21]]
-      .forEach(([x1, y1, x2, y2, lw]) => { ho.lineWidth = lw; ho.beginPath(); ho.moveTo(x1, y1); ho.lineTo(x2, y2); ho.stroke(); });
-    const hd = ho.getImageData(0, 0, 200, 200).data, inH = (x, y) => x >= 0 && y >= 0 && x < 200 && y < 200 && hd[(y * 200 + x) * 4 + 3] > 128;
-    const hcells = [];
-    for (let y = 0; y < 200; y += 2) for (let x = 0; x < 200; x += 2)
-      if (inH(x, y) && (!inH(x - 3, y) || !inH(x + 3, y) || !inH(x, y - 3) || !inH(x, y + 3))) hcells.push([x, y]);
-    const ar = h / w, HX = 0.9, HY = 0.31, HS = 0.36;
-    const E = [0.84, 0.68], Wr = [HX, HY + 0.46 * HS];               // elbow just inside the right shoulder; wrist under the palm
-    AV.pivot = E;                                                     // forearm + hand swing about the elbow
-    // sleeve: outline of a thick stroke from elbow to wrist, drawn in the avatar's own pixel grid
-    const sc = document.createElement("canvas"); sc.width = w; sc.height = h;
-    const so = sc.getContext("2d"); so.strokeStyle = "#000"; so.lineCap = "round"; so.lineWidth = 0.085 * w;
-    so.beginPath(); so.moveTo(E[0] * w, E[1] * h); so.lineTo(Wr[0] * w, Wr[1] * h); so.stroke();
-    const sd = so.getImageData(0, 0, w, h).data, inS = (x, y) => x >= 0 && y >= 0 && x < w && y < h && sd[(y * w + x) * 4 + 3] > 128;
-    const scells = [];
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
-      if (inS(x, y) && (!inS(x - 1, y) || !inS(x + 1, y) || !inS(x, y - 1) || !inS(x, y + 1)) && y < E[1] * h) scells.push([x, y]);   // open at the shoulder end
-    pts.forEach((p, i) => {
-      let u, v;
-      if (i < nl) { const [x, y] = picks[i % picks.length]; u = x / w; v = y / h; p.arm = false; }
-      else if (i < nl + nh) { const [hx, hy] = hcells[Math.floor((i - nl) * hcells.length / nh)]; u = HX + (hx - 100) / 200 * HS * ar; v = HY + (hy - 100) / 200 * HS; p.arm = true; }
-      else { const [sx, sy] = scells[Math.floor((i - nl - nh) * scells.length / ns)]; u = sx / w; v = sy / h; p.arm = true; }
-      p.av = [u, v]; p.avc = avColor(u, v);
-    });
-    AV.ready = true; AV.ar = ar;
+    pts.forEach((p, i) => { const [x, y] = picks[i % picks.length], u = x / w, v = y / h; p.av = [u, v]; p.avc = avColor(u, v); });
+    AV.ready = true; AV.ar = h / w;
   }
 
   // 3D helpers: yaw about vertical axis, then pitch toward the viewer; returns [x, y, depthScale]
@@ -376,12 +354,10 @@ footer { margin-top: 56px; font-size: 0.8rem; color: var(--muted); }
       const u = p.gu * 6.283 + ms / 5000, v = p.gv * 6.283, R0 = 1, r0 = 0.32;
       return view((R0 + r0 * Math.cos(v)) * Math.cos(u), r0 * Math.sin(v), (R0 + r0 * Math.cos(v)) * Math.sin(u), 0, 1.05, W * 0.3, H * 0.34);
     }
-    if (mode === "avatar") {  // the cartoon; the hand waves about the wrist
-      const ah = H * 0.94, aw = ah / AV.ar, cx = W < 600 ? W * 0.38 : W / 2;
-      let x = (p.av[0] - 0.5) * aw, y = p.av[1] * ah;
-      if (p.arm) { const px = (AV.pivot[0] - 0.5) * aw, py = AV.pivot[1] * ah, a = 0.1 + 0.24 * Math.sin(ms / 220), dx = x - px, dy = y - py;
-        x = px + dx * Math.cos(a) - dy * Math.sin(a); y = py + dx * Math.sin(a) + dy * Math.cos(a); }
-      return [cx + x, H * 0.03 + y];
+    if (mode === "avatar") {  // the portrait sways gently side to side as its hello
+      const ah = H * 0.94, aw = Math.min(ah / AV.ar, W * 0.9), cx = W < 600 ? W * 0.42 : W / 2;
+      const x = (p.av[0] - 0.5) * aw, y = p.av[1] * ah - ah, a = 0.05 * Math.sin(ms / 320);   // rotate about the bottom center
+      return [cx + x * Math.cos(a) - y * Math.sin(a), H * 0.03 + ah + x * Math.sin(a) + y * Math.cos(a)];
     }
     // color ribbon (1D manifold)
     return [(0.04 + 0.92 * p.ord) * W, H * (0.5 + 0.22 * Math.sin(p.ord * 8.5 + ms / 1500)) + (p.gv - 0.5) * H * 0.12];
